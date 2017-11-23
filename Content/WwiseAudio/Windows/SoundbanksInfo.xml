@@ -1,0 +1,1306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="11" SoundbankVersion="120">
+	<RootPaths>
+		<ProjectRoot>E:\Academia_Antoine\17-1-NAND216-ConcoursUbi_ETS-1\Academia2017\Academia2017_WwiseProject\</ProjectRoot>
+		<SourceFilesRoot>E:\Academia_Antoine\17-1-NAND216-ConcoursUbi_ETS-1\Academia2017\Academia2017_WwiseProject\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>E:\Academia_Antoine\17-1-NAND216-ConcoursUbi_ETS-1\Academia2017\Content\WwiseAudio\Windows\</SoundBanksRoot>
+		<ExternalSourcesInputFile></ExternalSourcesInputFile>
+		<ExternalSourcesOutputRoot>E:\Academia_Antoine\17-1-NAND216-ConcoursUbi_ETS-1\Academia2017\Academia2017_WwiseProject\GeneratedSoundBanks\Windows\</ExternalSourcesOutputRoot>
+	</RootPaths>
+	<DialogueEvents/>
+	<StreamedFiles>
+		<File Id="15630316" Language="SFX">
+			<ShortName>Base_A1_synthTemb1.wav</ShortName>
+			<Path>SFX\Base_A1_synthTemb1_8C947749.wem</Path>
+		</File>
+		<File Id="24979538" Language="SFX">
+			<ShortName>Fight_A1_drums.wav</ShortName>
+			<Path>SFX\Fight_A1_drums_8C947749.wem</Path>
+		</File>
+		<File Id="48580958" Language="SFX">
+			<ShortName>Base_A2_erhu2.wav</ShortName>
+			<Path>SFX\Base_A2_erhu2_8C947749.wem</Path>
+		</File>
+		<File Id="87160073" Language="SFX">
+			<ShortName>Base_A2_erhu1.wav</ShortName>
+			<Path>SFX\Base_A2_erhu1_8C947749.wem</Path>
+		</File>
+		<File Id="91731854" Language="SFX">
+			<ShortName>Base_C_synthTemb1.wav</ShortName>
+			<Path>SFX\Base_C_synthTemb1_8C947749.wem</Path>
+		</File>
+		<File Id="106381467" Language="SFX">
+			<ShortName>Base_B2_synthFlute2.wav</ShortName>
+			<Path>SFX\Base_B2_synthFlute2_8C947749.wem</Path>
+		</File>
+		<File Id="162606280" Language="SFX">
+			<ShortName>Base_A2_choir2.wav</ShortName>
+			<Path>SFX\Base_A2_choir2_8C947749.wem</Path>
+		</File>
+		<File Id="193500788" Language="SFX">
+			<ShortName>AMB_desert_wind_night.wav</ShortName>
+			<Path>SFX\AMB_desert_wind_night_8C947749.wem</Path>
+		</File>
+		<File Id="205434387" Language="SFX">
+			<ShortName>Base_C_choir.wav</ShortName>
+			<Path>SFX\Base_C_choir_8C947749.wem</Path>
+		</File>
+		<File Id="210639734" Language="SFX">
+			<ShortName>Fight_B2_bass.wav</ShortName>
+			<Path>SFX\Fight_B2_bass_8C947749.wem</Path>
+		</File>
+		<File Id="234498650" Language="SFX">
+			<ShortName>Fight_A1_bass.wav</ShortName>
+			<Path>SFX\Fight_A1_bass_8C947749.wem</Path>
+		</File>
+		<File Id="243000229" Language="SFX">
+			<ShortName>Base_B1et2_synthTemb.wav</ShortName>
+			<Path>SFX\Base_B1et2_synthTemb_8C947749.wem</Path>
+		</File>
+		<File Id="250159475" Language="SFX">
+			<ShortName>Base_A2_choir1.wav</ShortName>
+			<Path>SFX\Base_A2_choir1_8C947749.wem</Path>
+		</File>
+		<File Id="344008834" Language="SFX">
+			<ShortName>Fight_B2_chords.wav</ShortName>
+			<Path>SFX\Fight_B2_chords_8C947749.wem</Path>
+		</File>
+		<File Id="393765921" Language="SFX">
+			<ShortName>Fight_C_synthVoodo1.wav</ShortName>
+			<Path>SFX\Fight_C_synthVoodo1_8C947749.wem</Path>
+		</File>
+		<File Id="410725331" Language="SFX">
+			<ShortName>Base_A1_ruan1.wav</ShortName>
+			<Path>SFX\Base_A1_ruan1_8C947749.wem</Path>
+		</File>
+		<File Id="431840016" Language="SFX">
+			<ShortName>Base_C_ruan2.wav</ShortName>
+			<Path>SFX\Base_C_ruan2_8C947749.wem</Path>
+		</File>
+		<File Id="442249526" Language="SFX">
+			<ShortName>Base_B1_synthFlute1.wav</ShortName>
+			<Path>SFX\Base_B1_synthFlute1_8C947749.wem</Path>
+		</File>
+		<File Id="474153952" Language="SFX">
+			<ShortName>Transition_BasetoFight_01.wav</ShortName>
+			<Path>SFX\Transition_BasetoFight_01_8C947749.wem</Path>
+		</File>
+		<File Id="500033620" Language="SFX">
+			<ShortName>Fight_A2_chords.wav</ShortName>
+			<Path>SFX\Fight_A2_chords_8C947749.wem</Path>
+		</File>
+		<File Id="507131255" Language="SFX">
+			<ShortName>Base_B1_synthFlute2.wav</ShortName>
+			<Path>SFX\Base_B1_synthFlute2_8C947749.wem</Path>
+		</File>
+		<File Id="560545162" Language="SFX">
+			<ShortName>Fight_B1et2_drums.wav</ShortName>
+			<Path>SFX\Fight_B1et2_drums_8C947749.wem</Path>
+		</File>
+		<File Id="573130297" Language="SFX">
+			<ShortName>Base_A1_synthTemb2.wav</ShortName>
+			<Path>SFX\Base_A1_synthTemb2_8C947749.wem</Path>
+		</File>
+		<File Id="624362063" Language="SFX">
+			<ShortName>Base_C_synthFlute2.wav</ShortName>
+			<Path>SFX\Base_C_synthFlute2_8C947749.wem</Path>
+		</File>
+		<File Id="646292370" Language="SFX">
+			<ShortName>Fight_A1_chords.wav</ShortName>
+			<Path>SFX\Fight_A1_chords_8C947749.wem</Path>
+		</File>
+		<File Id="677546277" Language="SFX">
+			<ShortName>Base_C_synthTemb2.wav</ShortName>
+			<Path>SFX\Base_C_synthTemb2_8C947749.wem</Path>
+		</File>
+		<File Id="735057990" Language="SFX">
+			<ShortName>AMB_desert_wind_day.wav</ShortName>
+			<Path>SFX\AMB_desert_wind_day_8C947749.wem</Path>
+		</File>
+		<File Id="771133289" Language="SFX">
+			<ShortName>Fight_A2_drums.wav</ShortName>
+			<Path>SFX\Fight_A2_drums_8C947749.wem</Path>
+		</File>
+		<File Id="808427122" Language="SFX">
+			<ShortName>Fight_C_strings2.wav</ShortName>
+			<Path>SFX\Fight_C_strings2_8C947749.wem</Path>
+		</File>
+		<File Id="813416609" Language="SFX">
+			<ShortName>Base_B2_synthFlute1.wav</ShortName>
+			<Path>SFX\Base_B2_synthFlute1_8C947749.wem</Path>
+		</File>
+		<File Id="837297367" Language="SFX">
+			<ShortName>Fight_C_synthVoodo2.wav</ShortName>
+			<Path>SFX\Fight_C_synthVoodo2_8C947749.wem</Path>
+		</File>
+		<File Id="842861440" Language="SFX">
+			<ShortName>Base_C_ruan1.wav</ShortName>
+			<Path>SFX\Base_C_ruan1_8C947749.wem</Path>
+		</File>
+		<File Id="865263176" Language="SFX">
+			<ShortName>Fight_C_bass.wav</ShortName>
+			<Path>SFX\Fight_C_bass_8C947749.wem</Path>
+		</File>
+		<File Id="867907247" Language="SFX">
+			<ShortName>Base_A1_choir1.wav</ShortName>
+			<Path>SFX\Base_A1_choir1_8C947749.wem</Path>
+		</File>
+		<File Id="882092542" Language="SFX">
+			<ShortName>Base_A1_choir2.wav</ShortName>
+			<Path>SFX\Base_A1_choir2_8C947749.wem</Path>
+		</File>
+		<File Id="884421527" Language="SFX">
+			<ShortName>Fight_C_brass1.wav</ShortName>
+			<Path>SFX\Fight_C_brass1_8C947749.wem</Path>
+		</File>
+		<File Id="904153493" Language="SFX">
+			<ShortName>Base_C_ruan3.wav</ShortName>
+			<Path>SFX\Base_C_ruan3_8C947749.wem</Path>
+		</File>
+		<File Id="904695063" Language="SFX">
+			<ShortName>Base_A1_ruan2.wav</ShortName>
+			<Path>SFX\Base_A1_ruan2_8C947749.wem</Path>
+		</File>
+		<File Id="938555683" Language="SFX">
+			<ShortName>Fight_C_drums.wav</ShortName>
+			<Path>SFX\Fight_C_drums_8C947749.wem</Path>
+		</File>
+		<File Id="964097341" Language="SFX">
+			<ShortName>Fight_C_strings1.wav</ShortName>
+			<Path>SFX\Fight_C_strings1_8C947749.wem</Path>
+		</File>
+		<File Id="968636888" Language="SFX">
+			<ShortName>Base_C_synthFlute1.wav</ShortName>
+			<Path>SFX\Base_C_synthFlute1_8C947749.wem</Path>
+		</File>
+		<File Id="997849977" Language="SFX">
+			<ShortName>Fight_B1_chords.wav</ShortName>
+			<Path>SFX\Fight_B1_chords_8C947749.wem</Path>
+		</File>
+		<File Id="1025614346" Language="SFX">
+			<ShortName>Fight_C_brass2.wav</ShortName>
+			<Path>SFX\Fight_C_brass2_8C947749.wem</Path>
+		</File>
+		<File Id="1068783840" Language="SFX">
+			<ShortName>MUS_BossFight.wav</ShortName>
+			<Path>SFX\MUS_BossFight_8C947749.wem</Path>
+		</File>
+	</StreamedFiles>
+	<MediaFilesNotInAnyBank/>
+	<SoundBanks>
+		<SoundBank Id="1355168291" Language="SFX">
+			<ObjectPath>Init</ObjectPath>
+			<ShortName>Init</ShortName>
+			<Path>Init.bnk</Path>
+		</SoundBank>
+		<SoundBank Id="1644551209" Language="English(US)">
+			<ObjectPath>\SoundBanks\Default Work Unit\Chronomancer_Audio</ObjectPath>
+			<ShortName>Chronomancer_Audio</ShortName>
+			<Path>English(US)\Chronomancer_Audio.bnk</Path>
+			<IncludedEvents>
+				<Event Id="2111946019" Name="checkpointBurst" ObjectPath="\Events\Default Work Unit\checkpointBurst"/>
+				<Event Id="2501169819" Name="Chronolith_activate" ObjectPath="\Events\Default Work Unit\Chronolith_activate"/>
+				<Event Id="3614712998" Name="Chronolith_idle" ObjectPath="\Events\Default Work Unit\Chronolith_idle"/>
+				<Event Id="2483408736" Name="Clone_attackA" ObjectPath="\Events\Default Work Unit\Clone_attackA"/>
+				<Event Id="3103155092" Name="Clone_attackA_Y" ObjectPath="\Events\Default Work Unit\Clone_attackA_Y"/>
+				<Event Id="2483408739" Name="Clone_attackB" ObjectPath="\Events\Default Work Unit\Clone_attackB"/>
+				<Event Id="2029828747" Name="Clone_attackB_Y" ObjectPath="\Events\Default Work Unit\Clone_attackB_Y"/>
+				<Event Id="2029681699" Name="Clone_attackC_X" ObjectPath="\Events\Default Work Unit\Clone_attackC_X"/>
+				<Event Id="2029681698" Name="Clone_attackC_Y" ObjectPath="\Events\Default Work Unit\Clone_attackC_Y"/>
+				<Event Id="2655572022" Name="Clone_Disapear" ObjectPath="\Events\Default Work Unit\Clone_Disapear"/>
+				<Event Id="4248273854" Name="Clone_FS" ObjectPath="\Events\Default Work Unit\Clone_FS"/>
+				<Event Id="3860286172" Name="Clone_Spawn" ObjectPath="\Events\Default Work Unit\Clone_Spawn"/>
+				<Event Id="2801354278" Name="CloseGate" ObjectPath="\Events\Default Work Unit\CloseGate"/>
+				<Event Id="1083682093" Name="Col" ObjectPath="\Events\Default Work Unit\Col"/>
+				<Event Id="3705378287" Name="Elevator" ObjectPath="\Events\Default Work Unit\Elevator"/>
+				<Event Id="1526102535" Name="Enemy_Spawn" ObjectPath="\Events\Default Work Unit\Enemy_Spawn"/>
+				<Event Id="661808811" Name="Heroes_Hit" ObjectPath="\Events\Default Work Unit\Heroes_Hit"/>
+				<Event Id="4097863548" Name="Hitwall" ObjectPath="\Events\Default Work Unit\Hitwall"/>
+				<Event Id="3716597055" Name="Mage_FS" ObjectPath="\Events\Default Work Unit\Mage_FS"/>
+				<Event Id="926669292" Name="Mage_genericCasting" ObjectPath="\Events\Default Work Unit\Mage_genericCasting"/>
+				<Event Id="2591720645" Name="Mage_HealingDome" ObjectPath="\Events\Default Work Unit\Mage_HealingDome"/>
+				<Event Id="2611735068" Name="Mage_SlowDome" ObjectPath="\Events\Default Work Unit\Mage_SlowDome"/>
+				<Event Id="3983803883" Name="Mage_SlowDome_Stop" ObjectPath="\Events\Default Work Unit\Mage_SlowDome_Stop"/>
+				<Event Id="3450947812" Name="MUS_BossFight" ObjectPath="\Events\Default Work Unit\MUS_BossFight"/>
+				<Event Id="48865357" Name="MUS_Explo" ObjectPath="\Events\Default Work Unit\MUS_Explo"/>
+				<Event Id="1596734769" Name="MUS_Fight" ObjectPath="\Events\Default Work Unit\MUS_Fight"/>
+				<Event Id="3149643052" Name="MUS_Menu" ObjectPath="\Events\Default Work Unit\MUS_Menu"/>
+				<Event Id="3277078193" Name="Pilar_BeamBlast" ObjectPath="\Events\Default Work Unit\Pilar_BeamBlast"/>
+				<Event Id="1042102131" Name="Pilar_Hit" ObjectPath="\Events\Default Work Unit\Pilar_Hit"/>
+				<Event Id="343268951" Name="Prompt" ObjectPath="\Events\Default Work Unit\Prompt"/>
+				<Event Id="1845698229" Name="RecordOn" ObjectPath="\Events\Default Work Unit\RecordOn"/>
+				<Event Id="1843213257" Name="RewindDeathOff" ObjectPath="\Events\Default Work Unit\RewindDeathOff"/>
+				<Event Id="5031677" Name="RewindDeathON" ObjectPath="\Events\Default Work Unit\RewindDeathON"/>
+				<Event Id="218868919" Name="RewindOn" ObjectPath="\Events\Default Work Unit\RewindOn"/>
+				<Event Id="346457868" Name="secLord_attack" ObjectPath="\Events\Default Work Unit\secLord_attack"/>
+				<Event Id="1375529283" Name="secLord_Cinematique" ObjectPath="\Events\Default Work Unit\secLord_Cinematique"/>
+				<Event Id="621143742" Name="secLord_death" ObjectPath="\Events\Default Work Unit\secLord_death"/>
+				<Event Id="1553585348" Name="secLord_EggsCrack" ObjectPath="\Events\Default Work Unit\secLord_EggsCrack"/>
+				<Event Id="623525994" Name="secLord_Flight" ObjectPath="\Events\Default Work Unit\secLord_Flight"/>
+				<Event Id="3540414112" Name="secLord_Flight_End" ObjectPath="\Events\Default Work Unit\secLord_Flight_End"/>
+				<Event Id="2883614729" Name="secLord_FS" ObjectPath="\Events\Default Work Unit\secLord_FS"/>
+				<Event Id="4291315491" Name="secLord_hurt" ObjectPath="\Events\Default Work Unit\secLord_hurt"/>
+				<Event Id="1171281736" Name="secLord_LayEggs" ObjectPath="\Events\Default Work Unit\secLord_LayEggs"/>
+				<Event Id="2519638211" Name="secLord_orders" ObjectPath="\Events\Default Work Unit\secLord_orders"/>
+				<Event Id="3368917427" Name="secLord_scream" ObjectPath="\Events\Default Work Unit\secLord_scream"/>
+				<Event Id="1272478701" Name="secMinion_attack" ObjectPath="\Events\Default Work Unit\secMinion_attack"/>
+				<Event Id="104342024" Name="secMinion_FS" ObjectPath="\Events\Default Work Unit\secMinion_FS"/>
+				<Event Id="2831363114" Name="secMinions_death" ObjectPath="\Events\Default Work Unit\secMinions_death"/>
+				<Event Id="2717234939" Name="secMinions_hit" ObjectPath="\Events\Default Work Unit\secMinions_hit"/>
+				<Event Id="4212787239" Name="secTank_attack" ObjectPath="\Events\Default Work Unit\secTank_attack"/>
+				<Event Id="3247608231" Name="SecTank_death" ObjectPath="\Events\Default Work Unit\SecTank_death"/>
+				<Event Id="3587054066" Name="secTank_FS" ObjectPath="\Events\Default Work Unit\secTank_FS"/>
+				<Event Id="2271465702" Name="secTank_hit" ObjectPath="\Events\Default Work Unit\secTank_hit"/>
+				<Event Id="1521187885" Name="StartGame" ObjectPath="\Events\Default Work Unit\StartGame"/>
+				<Event Id="3920402320" Name="UnlockGate" ObjectPath="\Events\Default Work Unit\UnlockGate"/>
+				<Event Id="2877321465" Name="Warrior_attackA" ObjectPath="\Events\Default Work Unit\Warrior_attackA"/>
+				<Event Id="242644821" Name="Warrior_attackA_Y" ObjectPath="\Events\Default Work Unit\Warrior_attackA_Y"/>
+				<Event Id="2877321466" Name="Warrior_attackB" ObjectPath="\Events\Default Work Unit\Warrior_attackB"/>
+				<Event Id="3464094842" Name="Warrior_attackB_Y" ObjectPath="\Events\Default Work Unit\Warrior_attackB_Y"/>
+				<Event Id="243042082" Name="Warrior_attackC_X" ObjectPath="\Events\Default Work Unit\Warrior_attackC_X"/>
+				<Event Id="243042083" Name="Warrior_attackC_Y" ObjectPath="\Events\Default Work Unit\Warrior_attackC_Y"/>
+				<Event Id="2276216061" Name="Warrior_FS" ObjectPath="\Events\Default Work Unit\Warrior_FS"/>
+			</IncludedEvents>
+			<ReferencedStreamedFiles>
+				<File Id="15630316"/>
+				<File Id="24979538"/>
+				<File Id="48580958"/>
+				<File Id="87160073"/>
+				<File Id="91731854"/>
+				<File Id="106381467"/>
+				<File Id="162606280"/>
+				<File Id="193500788"/>
+				<File Id="205434387"/>
+				<File Id="210639734"/>
+				<File Id="234498650"/>
+				<File Id="243000229"/>
+				<File Id="250159475"/>
+				<File Id="344008834"/>
+				<File Id="393765921"/>
+				<File Id="410725331"/>
+				<File Id="431840016"/>
+				<File Id="442249526"/>
+				<File Id="474153952"/>
+				<File Id="500033620"/>
+				<File Id="507131255"/>
+				<File Id="560545162"/>
+				<File Id="573130297"/>
+				<File Id="624362063"/>
+				<File Id="646292370"/>
+				<File Id="677546277"/>
+				<File Id="735057990"/>
+				<File Id="771133289"/>
+				<File Id="808427122"/>
+				<File Id="813416609"/>
+				<File Id="837297367"/>
+				<File Id="842861440"/>
+				<File Id="865263176"/>
+				<File Id="867907247"/>
+				<File Id="882092542"/>
+				<File Id="884421527"/>
+				<File Id="904153493"/>
+				<File Id="904695063"/>
+				<File Id="938555683"/>
+				<File Id="964097341"/>
+				<File Id="968636888"/>
+				<File Id="997849977"/>
+				<File Id="1025614346"/>
+				<File Id="1068783840"/>
+			</ReferencedStreamedFiles>
+			<IncludedMemoryFiles>
+				<File Id="4447577" Language="SFX">
+					<ShortName>SFX_secLord_attack_L1_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_attack_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="6911842" Language="SFX">
+					<ShortName>SFX_Clone_spawn_end_02.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_end_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="8522431" Language="SFX">
+					<ShortName>SFX_secTank_death_L2_01.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="11563789" Language="SFX">
+					<ShortName>SFX_secTank_hit_02.wav</ShortName>
+					<Path>SFX\SFX_secTank_hit_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="15876986" Language="SFX">
+					<ShortName>SFX_Scream_Growl_03.wav</ShortName>
+					<Path>SFX\SFX_Scream_Growl_03_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="19315777" Language="SFX">
+					<ShortName>SFX_Bird_Buzzard_04.wav</ShortName>
+					<Path>SFX\SFX_Bird_Buzzard_04_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="20749460" Language="SFX">
+					<ShortName>SFX_Samourai_rewind_02.wav</ShortName>
+					<Path>SFX\SFX_Samourai_rewind_02_3268A09A.wem</Path>
+				</File>
+				<File Id="24090411" Language="SFX">
+					<ShortName>SFX_secMinion_attack_L2_02.wav</ShortName>
+					<Path>SFX\SFX_secMinion_attack_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="25638775" Language="SFX">
+					<ShortName>SFX_secLord_hurt_L2_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_hurt_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="29587508" Language="SFX">
+					<ShortName>SFX_Heroes_Hit_04.wav</ShortName>
+					<Path>SFX\SFX_Heroes_Hit_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="37093294" Language="SFX">
+					<ShortName>SFX_secLord_eggsCrack_L1_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_eggsCrack_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="46928544" Language="SFX">
+					<ShortName>SFX_Col_L1_05.wav</ShortName>
+					<Path>SFX\SFX_Col_L1_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="54595516" Language="SFX">
+					<ShortName>SFX_Hitwall_L2_03.wav</ShortName>
+					<Path>SFX\SFX_Hitwall_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="55596812" Language="SFX">
+					<ShortName>SFX_FS_Heroes_08.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_08_0EEECE5B.wem</Path>
+				</File>
+				<File Id="55659256" Language="SFX">
+					<ShortName>SFX_secLord_hurt_L1_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_hurt_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="59266540" Language="SFX">
+					<ShortName>SFX_closeGate.wav</ShortName>
+					<Path>SFX\SFX_closeGate_0EEECE5B.wem</Path>
+				</File>
+				<File Id="61340196" Language="SFX">
+					<ShortName>SFX_checkpointBurst.wav</ShortName>
+					<Path>SFX\SFX_checkpointBurst_0EEECE5B.wem</Path>
+				</File>
+				<File Id="68772931" Language="SFX">
+					<ShortName>SFX_FS_Heroes_07.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_07_0EEECE5B.wem</Path>
+				</File>
+				<File Id="88312835" Language="SFX">
+					<ShortName>SFX_secTank_death_L1_02.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="93739854" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_09.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_09_0EEECE5B.wem</Path>
+				</File>
+				<File Id="103321610" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_05.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="104437052" Language="SFX">
+					<ShortName>SFX_secMinions_deathL1_02.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="105162033" Language="SFX">
+					<ShortName>SFX_secTank_death_L3_01.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L3_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="108327636" Language="SFX">
+					<ShortName>SFX_Samourai_record_02.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="114640650" Language="SFX">
+					<ShortName>SFX_secLord_attack_L1_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_attack_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="115596003" Language="SFX">
+					<ShortName>SFX_secLord_LayEggs_L2_04.wav</ShortName>
+					<Path>SFX\SFX_secLord_LayEggs_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="115928875" Language="SFX">
+					<ShortName>SFX_Scream_Growl_04.wav</ShortName>
+					<Path>SFX\SFX_Scream_Growl_04_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="117978113" Language="SFX">
+					<ShortName>SFX_unlockGate.wav</ShortName>
+					<Path>SFX\SFX_unlockGate_0EEECE5B.wem</Path>
+				</File>
+				<File Id="118659772" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_02.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="120366142" Language="SFX">
+					<ShortName>SFX_ennemy_spawn_L2_04.wav</ShortName>
+					<Path>SFX\SFX_ennemy_spawn_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="125693724" Language="SFX">
+					<ShortName>SFX_secLord_LayEggs_L2_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_LayEggs_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="126856229" Language="SFX">
+					<ShortName>SFX_secLord_LayEggs_L1_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_LayEggs_L1_03_D9FD91D7.wem</Path>
+				</File>
+				<File Id="139959620" Language="SFX">
+					<ShortName>SFX_secMinions_deathL1_05.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL1_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="140687917" Language="SFX">
+					<ShortName>SFX_FS_Heroes_05.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="144141702" Language="SFX">
+					<ShortName>SFX_secMinion_attack_L1_01.wav</ShortName>
+					<Path>SFX\SFX_secMinion_attack_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="157695658" Language="SFX">
+					<ShortName>SFX_Pillar_Hit_L1_03.wav</ShortName>
+					<Path>SFX\SFX_Pillar_Hit_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="166440942" Language="SFX">
+					<ShortName>SFX_Warrior_attackResoHigh_02.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackResoHigh_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="176441147" Language="SFX">
+					<ShortName>SFX_Warrior_attackC_03.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackC_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="181768196" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_06.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_06_0EEECE5B.wem</Path>
+				</File>
+				<File Id="197492990" Language="SFX">
+					<ShortName>SFX_secLord_death.wav</ShortName>
+					<Path>SFX\SFX_secLord_death_0EEECE5B.wem</Path>
+				</File>
+				<File Id="199454059" Language="SFX">
+					<ShortName>SFX_secTank_death_L1_03.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="200196018" Language="SFX">
+					<ShortName>SFX_MysteriousScream_05.wav</ShortName>
+					<Path>SFX\SFX_MysteriousScream_05_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="207326526" Language="SFX">
+					<ShortName>SFX_Pillar_Hit_L2_03.wav</ShortName>
+					<Path>SFX\SFX_Pillar_Hit_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="207385529" Language="SFX">
+					<ShortName>SFX_FS_Heroes_03.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="207886481" Language="SFX">
+					<ShortName>SFX_Bird_Buzzard_01.wav</ShortName>
+					<Path>SFX\SFX_Bird_Buzzard_01_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="214288218" Language="SFX">
+					<ShortName>SFX_Samourai_record_03_end.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_03_end_0EEECE5B.wem</Path>
+				</File>
+				<File Id="218771376" Language="SFX">
+					<ShortName>SFX_secLord_hurt_L1_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_hurt_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="220063528" Language="SFX">
+					<ShortName>SFX_FS_Heroes_09.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_09_0EEECE5B.wem</Path>
+				</File>
+				<File Id="220531761" Language="SFX">
+					<ShortName>SFX_Warrior_attackA_01.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackA_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="226740649" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_03.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="227903704" Language="SFX">
+					<ShortName>SFX_Warrior_attackA_02.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackA_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="231202306" Language="SFX">
+					<ShortName>SFX_secMinions_deathL2_02.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="231943519" Language="SFX">
+					<ShortName>SFX_secLord_Flight_Start.wav</ShortName>
+					<Path>SFX\SFX_secLord_Flight_Start_0EEECE5B.wem</Path>
+				</File>
+				<File Id="237634413" Language="SFX">
+					<ShortName>SFX_Col_L2_04.wav</ShortName>
+					<Path>SFX\SFX_Col_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="239952376" Language="SFX">
+					<ShortName>SFX_FS_secLord_L2_07.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L2_07_0EEECE5B.wem</Path>
+				</File>
+				<File Id="245912999" Language="SFX">
+					<ShortName>SFX_elevator.wav</ShortName>
+					<Path>SFX\SFX_elevator_8D7FAEBE.wem</Path>
+				</File>
+				<File Id="255335490" Language="SFX">
+					<ShortName>SFX_FS_secLord_L2_04.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="259801301" Language="SFX">
+					<ShortName>SFX_Scream_Growl_02.wav</ShortName>
+					<Path>SFX\SFX_Scream_Growl_02_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="262188100" Language="SFX">
+					<ShortName>SFX_Warrior_attackB_01.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackB_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="266660138" Language="SFX">
+					<ShortName>SFX_secTank_hit_04.wav</ShortName>
+					<Path>SFX\SFX_secTank_hit_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="270688887" Language="SFX">
+					<ShortName>SFX_FS_secLord_L1_06.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L1_06_0EEECE5B.wem</Path>
+				</File>
+				<File Id="272312311" Language="SFX">
+					<ShortName>SFX_Scream_Growl_06.wav</ShortName>
+					<Path>SFX\SFX_Scream_Growl_06_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="273195389" Language="SFX">
+					<ShortName>SFX_secMinions_deathL1_03.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="282262265" Language="SFX">
+					<ShortName>SFX_secLord_scream_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_scream_03_073F2586.wem</Path>
+				</File>
+				<File Id="283600384" Language="SFX">
+					<ShortName>SFX_secTank_attack_L2_02.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="289349496" Language="SFX">
+					<ShortName>SFX_Samourai_record_02_loop.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_02_loop_BA19D509.wem</Path>
+				</File>
+				<File Id="292686284" Language="SFX">
+					<ShortName>SFX_Col_L1_03.wav</ShortName>
+					<Path>SFX\SFX_Col_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="299416721" Language="SFX">
+					<ShortName>SFX_secLord_cinematique.wav</ShortName>
+					<Path>SFX\SFX_secLord_cinematique_0EEECE5B.wem</Path>
+				</File>
+				<File Id="299991023" Language="SFX">
+					<ShortName>SFX_secLord_eggsCrack_L2_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_eggsCrack_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="300638008" Language="SFX">
+					<ShortName>SFX_Bird_Buzzard_05.wav</ShortName>
+					<Path>SFX\SFX_Bird_Buzzard_05_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="309647266" Language="SFX">
+					<ShortName>SFX_Bird_Medley_02.wav</ShortName>
+					<Path>SFX\SFX_Bird_Medley_02_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="312504779" Language="SFX">
+					<ShortName>SFX_Heroes_Hit_01.wav</ShortName>
+					<Path>SFX\SFX_Heroes_Hit_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="314152858" Language="SFX">
+					<ShortName>SFX_Clone_spawn_startL1_03.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_startL1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="314702148" Language="SFX">
+					<ShortName>SFX_Scream_Growl_01.wav</ShortName>
+					<Path>SFX\SFX_Scream_Growl_01_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="314762975" Language="SFX">
+					<ShortName>SFX_secLord_eggsCrack_L2_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_eggsCrack_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="320416950" Language="SFX">
+					<ShortName>SFX_secMinions_hit_03.wav</ShortName>
+					<Path>SFX\SFX_secMinions_hit_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="323395758" Language="SFX">
+					<ShortName>SFX_secTank_death_L2_03.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="331326883" Language="SFX">
+					<ShortName>SFX_Heroes_Hit_02.wav</ShortName>
+					<Path>SFX\SFX_Heroes_Hit_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="332166052" Language="SFX">
+					<ShortName>SFX_secMinions_deathL2_04.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="336095809" Language="SFX">
+					<ShortName>SFX_Hitwall_L1_02.wav</ShortName>
+					<Path>SFX\SFX_Hitwall_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="337144530" Language="SFX">
+					<ShortName>SFX_Samourai_record_02_end.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_02_end_0EEECE5B.wem</Path>
+				</File>
+				<File Id="338787895" Language="SFX">
+					<ShortName>SFX_Mage_healing_dome_01.wav</ShortName>
+					<Path>SFX\SFX_Mage_healing_dome_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="345873607" Language="SFX">
+					<ShortName>SFX_secMinions_hit_04.wav</ShortName>
+					<Path>SFX\SFX_secMinions_hit_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="347699135" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_05.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="351023927" Language="SFX">
+					<ShortName>SFX_secLord_eggsCrack_L2_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_eggsCrack_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="351966201" Language="SFX">
+					<ShortName>SFX_Clone_spawn_startL1_01.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_startL1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="364093088" Language="SFX">
+					<ShortName>SFX_secLord_hurt_L2_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_hurt_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="380064277" Language="SFX">
+					<ShortName>SFX_Col_L1_04.wav</ShortName>
+					<Path>SFX\SFX_Col_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="382216634" Language="SFX">
+					<ShortName>SFX_Col_L1_06.wav</ShortName>
+					<Path>SFX\SFX_Col_L1_06_0EEECE5B.wem</Path>
+				</File>
+				<File Id="390206711" Language="SFX">
+					<ShortName>SFX_ennemy_spawn_L2_05.wav</ShortName>
+					<Path>SFX\SFX_ennemy_spawn_L2_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="398908865" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_04.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="409678148" Language="SFX">
+					<ShortName>SFX_FS_secLord_L1_07.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L1_07_0EEECE5B.wem</Path>
+				</File>
+				<File Id="413764324" Language="SFX">
+					<ShortName>SFX_Mage_Slow_Dome.wav</ShortName>
+					<Path>SFX\SFX_Mage_Slow_Dome_BA19D509.wem</Path>
+				</File>
+				<File Id="415478580" Language="SFX">
+					<ShortName>SFX_secLord_LayEggs_L1_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_LayEggs_L1_02_99B51D55.wem</Path>
+				</File>
+				<File Id="422274154" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_02.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="426150247" Language="SFX">
+					<ShortName>SFX_Warrior_attackResoHigh_01.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackResoHigh_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="428226662" Language="SFX">
+					<ShortName>SFX_secLord_hurt_L2_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_hurt_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="428380599" Language="SFX">
+					<ShortName>SFX_secLord_scream_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_scream_02_59257A9F.wem</Path>
+				</File>
+				<File Id="429662382" Language="SFX">
+					<ShortName>SFX_FS_secLord_L2_01.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="434723532" Language="SFX">
+					<ShortName>SFX_Samourai_rewind_03.wav</ShortName>
+					<Path>SFX\SFX_Samourai_rewind_03_1663A40F.wem</Path>
+				</File>
+				<File Id="439307105" Language="SFX">
+					<ShortName>SFX_secMinions_deathL2_01.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="453108392" Language="SFX">
+					<ShortName>SFX_Col_L2_03.wav</ShortName>
+					<Path>SFX\SFX_Col_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="457059457" Language="SFX">
+					<ShortName>SFX_secLord_scream_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_scream_01_CB5A68F1.wem</Path>
+				</File>
+				<File Id="460707629" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_03.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="463301707" Language="SFX">
+					<ShortName>SFX_Samourai_record_03.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="470691394" Language="SFX">
+					<ShortName>SFX_Col_L1_02.wav</ShortName>
+					<Path>SFX\SFX_Col_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="477911711" Language="SFX">
+					<ShortName>SFX_FS_Heroes_12.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_12_0EEECE5B.wem</Path>
+				</File>
+				<File Id="480083486" Language="SFX">
+					<ShortName>SFX_Clone_spawn_startL1_02.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_startL1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="481654864" Language="SFX">
+					<ShortName>SFX_Clone_spawn_startL2_01.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_startL2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="485496162" Language="SFX">
+					<ShortName>SFX_Pillar_Hit_L2_01.wav</ShortName>
+					<Path>SFX\SFX_Pillar_Hit_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="489806537" Language="SFX">
+					<ShortName>SFX_Bird_Buzzard_02.wav</ShortName>
+					<Path>SFX\SFX_Bird_Buzzard_02_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="494559277" Language="SFX">
+					<ShortName>SFX_MysteriousScream_01.wav</ShortName>
+					<Path>SFX\SFX_MysteriousScream_01_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="497444535" Language="SFX">
+					<ShortName>SFX_secTank_death_L1_01.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="500227461" Language="SFX">
+					<ShortName>SFX_secTank_attack_L1_03.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="502795102" Language="SFX">
+					<ShortName>SFX_Warrior_attackResoHigh_03.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackResoHigh_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="503198242" Language="SFX">
+					<ShortName>SFX_FS_secLord_L2_03.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="504268826" Language="SFX">
+					<ShortName>SFX_secLord_hurt_L1_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_hurt_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="512585090" Language="SFX">
+					<ShortName>SFX_Warrior_attackB_04.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackB_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="514574591" Language="SFX">
+					<ShortName>SFX_MysteriousScream_04.wav</ShortName>
+					<Path>SFX\SFX_MysteriousScream_04_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="515260560" Language="SFX">
+					<ShortName>SFX_Warrior_attackB_02.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackB_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="517916236" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_08.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_08_0EEECE5B.wem</Path>
+				</File>
+				<File Id="520407133" Language="SFX">
+					<ShortName>SFX_secLord_scream_04.wav</ShortName>
+					<Path>SFX\SFX_secLord_scream_04_AA7AB04B.wem</Path>
+				</File>
+				<File Id="523230795" Language="SFX">
+					<ShortName>SFX_secTank_death_L3_02.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L3_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="523515417" Language="SFX">
+					<ShortName>SFX_Warrior_attackB_03.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackB_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="524255152" Language="SFX">
+					<ShortName>SFX_FS_secLord_L1_05.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L1_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="524419858" Language="SFX">
+					<ShortName>SFX_Clone_spawn_startL2_02.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_startL2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="525898703" Language="SFX">
+					<ShortName>SFX_Hitwall_L2_01.wav</ShortName>
+					<Path>SFX\SFX_Hitwall_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="533617908" Language="SFX">
+					<ShortName>SFX_secTank_hit_01.wav</ShortName>
+					<Path>SFX\SFX_secTank_hit_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="543641278" Language="SFX">
+					<ShortName>SFX_Col_L2_02.wav</ShortName>
+					<Path>SFX\SFX_Col_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="545588694" Language="SFX">
+					<ShortName>SFX_Clone_spawn_loop.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_loop_BA19D509.wem</Path>
+				</File>
+				<File Id="551744782" Language="SFX">
+					<ShortName>SFX_Warrior_attackC_04.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackC_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="553811145" Language="SFX">
+					<ShortName>SFX_secLord_LayEggs_L1_04.wav</ShortName>
+					<Path>SFX\SFX_secLord_LayEggs_L1_04_436C799D.wem</Path>
+				</File>
+				<File Id="561313751" Language="SFX">
+					<ShortName>SFX_secTank_attack_L1_01.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="561691607" Language="SFX">
+					<ShortName>SFX_secLord_LayEggs_L2_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_LayEggs_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="563084123" Language="SFX">
+					<ShortName>SFX_ennemy_spawn_L2_01.wav</ShortName>
+					<Path>SFX\SFX_ennemy_spawn_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="577405770" Language="SFX">
+					<ShortName>SFX_secLord_Flight_End.wav</ShortName>
+					<Path>SFX\SFX_secLord_Flight_End_0EEECE5B.wem</Path>
+				</File>
+				<File Id="585333455" Language="SFX">
+					<ShortName>SFX_Samourai_record_01_loop.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_01_loop_BA19D509.wem</Path>
+				</File>
+				<File Id="600154753" Language="SFX">
+					<ShortName>SFX_secTank_attack_L2_03.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="601289230" Language="SFX">
+					<ShortName>SFX_Warrior_attackResoLow_03.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackResoLow_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="605227094" Language="SFX">
+					<ShortName>SFX_Samourai_rewind_01.wav</ShortName>
+					<Path>SFX\SFX_Samourai_rewind_01_016BCDD2.wem</Path>
+				</File>
+				<File Id="615282618" Language="SFX">
+					<ShortName>SFX_FS_secLord_L2_05.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L2_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="619032198" Language="SFX">
+					<ShortName>SFX_ennemy_spawn_L2_02.wav</ShortName>
+					<Path>SFX\SFX_ennemy_spawn_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="621344553" Language="SFX">
+					<ShortName>SFX_Col_L2_05.wav</ShortName>
+					<Path>SFX\SFX_Col_L2_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="623374788" Language="SFX">
+					<ShortName>SFX_secTank_attack_L2_04.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="626143066" Language="SFX">
+					<ShortName>SFX_Warrior_attackResoLow_01.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackResoLow_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="629094202" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_10.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_10_0EEECE5B.wem</Path>
+				</File>
+				<File Id="632293112" Language="SFX">
+					<ShortName>SFX_FS_secLord_L2_06.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L2_06_0EEECE5B.wem</Path>
+				</File>
+				<File Id="632591711" Language="SFX">
+					<ShortName>SFX_secLord_eggsCrack_L1_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_eggsCrack_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="634925086" Language="SFX">
+					<ShortName>SFX_FS_Heroes_01.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="635605307" Language="SFX">
+					<ShortName>SFX_secMinion_attack_L2_03.wav</ShortName>
+					<Path>SFX\SFX_secMinion_attack_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="642429047" Language="SFX">
+					<ShortName>SFX_FS_Heroes_02.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="646353209" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_01.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="651462279" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_06.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_06_0EEECE5B.wem</Path>
+				</File>
+				<File Id="651712484" Language="SFX">
+					<ShortName>SFX_Col_L1_01.wav</ShortName>
+					<Path>SFX\SFX_Col_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="655527671" Language="SFX">
+					<ShortName>SFX_MysteriousScream_03.wav</ShortName>
+					<Path>SFX\SFX_MysteriousScream_03_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="656751180" Language="SFX">
+					<ShortName>SFX_secTank_death_L2_02.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="658941973" Language="SFX">
+					<ShortName>SFX_Samourai_record_03_loop.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_03_loop_BA19D509.wem</Path>
+				</File>
+				<File Id="660301342" Language="SFX">
+					<ShortName>SFX_secLord_hurt_L1_04.wav</ShortName>
+					<Path>SFX\SFX_secLord_hurt_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="662417133" Language="SFX">
+					<ShortName>SFX_Warrior_death.wav</ShortName>
+					<Path>SFX\SFX_Warrior_death_0EEECE5B.wem</Path>
+				</File>
+				<File Id="666135829" Language="SFX">
+					<ShortName>SFX_Scream_Growl_05.wav</ShortName>
+					<Path>SFX\SFX_Scream_Growl_05_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="694734378" Language="SFX">
+					<ShortName>SFX_secLord_Flight_Loop.wav</ShortName>
+					<Path>SFX\SFX_secLord_Flight_Loop_BA19D509.wem</Path>
+				</File>
+				<File Id="707115292" Language="SFX">
+					<ShortName>SFX_LOGO.wav</ShortName>
+					<Path>SFX\SFX_LOGO_0EEECE5B.wem</Path>
+				</File>
+				<File Id="712885259" Language="SFX">
+					<ShortName>SFX_Warrior_attackA_05.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackA_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="715414811" Language="SFX">
+					<ShortName>SFX_secTank_death_L3_03.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L3_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="717003472" Language="SFX">
+					<ShortName>SFX_secLord_attack_L2_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_attack_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="721215799" Language="SFX">
+					<ShortName>SFX_ennemy_spawn_L2_06.wav</ShortName>
+					<Path>SFX\SFX_ennemy_spawn_L2_06_0EEECE5B.wem</Path>
+				</File>
+				<File Id="721913197" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_12.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_12_0EEECE5B.wem</Path>
+				</File>
+				<File Id="722274140" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_11.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_11_0EEECE5B.wem</Path>
+				</File>
+				<File Id="724864390" Language="SFX">
+					<ShortName>SFX_secMinions_deathL1_01.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="731170676" Language="SFX">
+					<ShortName>SFX_Warrior_attackA_03.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackA_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="741359802" Language="SFX">
+					<ShortName>SFX_Clone_spawn_startL2_03.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_startL2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="756169263" Language="SFX">
+					<ShortName>SFX_secTank_death_L1_04.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="756343450" Language="SFX">
+					<ShortName>SFX_secLord_eggsCrack_L1_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_eggsCrack_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="765685665" Language="SFX">
+					<ShortName>SFX_MysteriousScream_02.wav</ShortName>
+					<Path>SFX\SFX_MysteriousScream_02_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="768924252" Language="SFX">
+					<ShortName>SFX_secMinion_attack_L2_01.wav</ShortName>
+					<Path>SFX\SFX_secMinion_attack_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="774162007" Language="SFX">
+					<ShortName>SFX_secLord_hurt_L2_04.wav</ShortName>
+					<Path>SFX\SFX_secLord_hurt_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="778279745" Language="SFX">
+					<ShortName>SFX_FS_Heroes_11.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_11_0EEECE5B.wem</Path>
+				</File>
+				<File Id="780345427" Language="SFX">
+					<ShortName>SFX_Hitwall_L2_02.wav</ShortName>
+					<Path>SFX\SFX_Hitwall_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="788249787" Language="SFX">
+					<ShortName>SFX_secTank_attack_L1_02.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="792048023" Language="SFX">
+					<ShortName>SFX_Pillar_Hit_L2_04.wav</ShortName>
+					<Path>SFX\SFX_Pillar_Hit_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="793471610" Language="SFX">
+					<ShortName>SFX_secMinions_hit_01.wav</ShortName>
+					<Path>SFX\SFX_secMinions_hit_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="802176321" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_10.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_10_0EEECE5B.wem</Path>
+				</File>
+				<File Id="806629696" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_01.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="807397747" Language="SFX">
+					<ShortName>SFX_FS_secLord_L1_01 (1).wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L1_01 (1)_0EEECE5B.wem</Path>
+				</File>
+				<File Id="807614996" Language="SFX">
+					<ShortName>SFX_secLord_eggsCrack_L1_04.wav</ShortName>
+					<Path>SFX\SFX_secLord_eggsCrack_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="812187070" Language="SFX">
+					<ShortName>SFX_Mage_healing_dome_02.wav</ShortName>
+					<Path>SFX\SFX_Mage_healing_dome_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="813376379" Language="SFX">
+					<ShortName>SFX_col_L3_02.wav</ShortName>
+					<Path>SFX\SFX_col_L3_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="814162838" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_07.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_07_0EEECE5B.wem</Path>
+				</File>
+				<File Id="815249280" Language="SFX">
+					<ShortName>SFX_Clone_spawn_end_01.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_end_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="817605668" Language="SFX">
+					<ShortName>SFX_secMinion_attack_L1_02.wav</ShortName>
+					<Path>SFX\SFX_secMinion_attack_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="832363677" Language="SFX">
+					<ShortName>SFX_secMinions_deathL1_04.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="834448271" Language="SFX">
+					<ShortName>SFX_Col_L2_01.wav</ShortName>
+					<Path>SFX\SFX_Col_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="836396947" Language="SFX">
+					<ShortName>SFX_Warrior_attackC_02.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackC_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="838106157" Language="SFX">
+					<ShortName>SFX_ennemy_spawn_L1.wav</ShortName>
+					<Path>SFX\SFX_ennemy_spawn_L1_5C3AB732.wem</Path>
+				</File>
+				<File Id="845070381" Language="SFX">
+					<ShortName>SFX_Warrior_attackA_04.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackA_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="845243961" Language="SFX">
+					<ShortName>SFX_secTank_attack_L2_05.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L2_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="846415758" Language="SFX">
+					<ShortName>SFX_secTank_attack_L1_05.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L1_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="846997896" Language="SFX">
+					<ShortName>SFX_Bird_Medley_01.wav</ShortName>
+					<Path>SFX\SFX_Bird_Medley_01_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="849740904" Language="SFX">
+					<ShortName>SFX_secLord_eggsCrack_L2_04.wav</ShortName>
+					<Path>SFX\SFX_secLord_eggsCrack_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="868383803" Language="SFX">
+					<ShortName>SFX_secLord_LayEggs_L1_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_LayEggs_L1_01_B245E253.wem</Path>
+				</File>
+				<File Id="869363757" Language="SFX">
+					<ShortName>SFX_Pillar_Hit_L1_01.wav</ShortName>
+					<Path>SFX\SFX_Pillar_Hit_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="872264143" Language="SFX">
+					<ShortName>SFX_Samourai_record_01_end.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_01_end_0EEECE5B.wem</Path>
+				</File>
+				<File Id="876071883" Language="SFX">
+					<ShortName>SFX_Col_L2_06.wav</ShortName>
+					<Path>SFX\SFX_Col_L2_06_0EEECE5B.wem</Path>
+				</File>
+				<File Id="877108025" Language="SFX">
+					<ShortName>SFX_col_L3_01.wav</ShortName>
+					<Path>SFX\SFX_col_L3_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="879119865" Language="SFX">
+					<ShortName>SFX_ennemy_spawn_L2_03.wav</ShortName>
+					<Path>SFX\SFX_ennemy_spawn_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="880039005" Language="SFX">
+					<ShortName>SFX_Hitwall_L1_01.wav</ShortName>
+					<Path>SFX\SFX_Hitwall_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="881402574" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_09.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_09_0EEECE5B.wem</Path>
+				</File>
+				<File Id="887221459" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_07.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_07_0EEECE5B.wem</Path>
+				</File>
+				<File Id="896584172" Language="SFX">
+					<ShortName>SFX_FS_secLord_L1_08.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L1_08_0EEECE5B.wem</Path>
+				</File>
+				<File Id="899057541" Language="SFX">
+					<ShortName>SFX_FS_secLord_L2_02.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="899588677" Language="SFX">
+					<ShortName>SFX_FS_secLord_L1_04.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="901141733" Language="SFX">
+					<ShortName>SFX_Hitwall_L1_03.wav</ShortName>
+					<Path>SFX\SFX_Hitwall_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="907033826" Language="SFX">
+					<ShortName>SFX_secMinion_attack_L1_03.wav</ShortName>
+					<Path>SFX\SFX_secMinion_attack_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="908273704" Language="SFX">
+					<ShortName>SFX_secLord_attack_L1_04.wav</ShortName>
+					<Path>SFX\SFX_secLord_attack_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="908324829" Language="SFX">
+					<ShortName>SFX_secTank_attack_L2_01.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="919113089" Language="SFX">
+					<ShortName>SFX_FS_Warrior_cloth_04.wav</ShortName>
+					<Path>SFX\SFX_FS_Warrior_cloth_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="922345268" Language="SFX">
+					<ShortName>SFX_secMinions_hit_02.wav</ShortName>
+					<Path>SFX\SFX_secMinions_hit_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="936436638" Language="SFX">
+					<ShortName>SFX_RewindDeath_end.wav</ShortName>
+					<Path>SFX\SFX_RewindDeath_end_0EEECE5B.wem</Path>
+				</File>
+				<File Id="943597694" Language="SFX">
+					<ShortName>SFX_FS_secLord_L1_02.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="952374469" Language="SFX">
+					<ShortName>SFX_Samourai_record_01.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="955526016" Language="SFX">
+					<ShortName>SFX_Samourai_record_01.wav</ShortName>
+					<Path>SFX\SFX_Samourai_record_01_6457D107.wem</Path>
+				</File>
+				<File Id="969266975" Language="SFX">
+					<ShortName>SFX_RewindDeath_loop.wav</ShortName>
+					<Path>SFX\SFX_RewindDeath_loop_BA19D509.wem</Path>
+				</File>
+				<File Id="971986256" Language="SFX">
+					<ShortName>SFX_Pillar_Hit_L1_02.wav</ShortName>
+					<Path>SFX\SFX_Pillar_Hit_L1_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="980584887" Language="SFX">
+					<ShortName>SFX_FS_Heroes_06.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_06_0EEECE5B.wem</Path>
+				</File>
+				<File Id="988000827" Language="SFX">
+					<ShortName>SFX_secTank_hit_03.wav</ShortName>
+					<Path>SFX\SFX_secTank_hit_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="992651723" Language="SFX">
+					<ShortName>SFX_Bird_Medley_03.wav</ShortName>
+					<Path>SFX\SFX_Bird_Medley_03_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="993751045" Language="SFX">
+					<ShortName>SFX_Pillar_Hit_L1_04.wav</ShortName>
+					<Path>SFX\SFX_Pillar_Hit_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="994264349" Language="SFX">
+					<ShortName>SFX_secLord_attack_L2_03.wav</ShortName>
+					<Path>SFX\SFX_secLord_attack_L2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="995939609" Language="SFX">
+					<ShortName>SFX_secTank_death_L1_05.wav</ShortName>
+					<Path>SFX\SFX_secTank_death_L1_05_0EEECE5B.wem</Path>
+				</File>
+				<File Id="996685371" Language="SFX">
+					<ShortName>SFX_Clone_spawn_end_03.wav</ShortName>
+					<Path>SFX\SFX_Clone_spawn_end_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="997943702" Language="SFX">
+					<ShortName>SFX_secMinions_deathL2_03.wav</ShortName>
+					<Path>SFX\SFX_secMinions_deathL2_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1004320978" Language="SFX">
+					<ShortName>SFX_FS_Mage_cloth_08.wav</ShortName>
+					<Path>SFX\SFX_FS_Mage_cloth_08_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1007661416" Language="SFX">
+					<ShortName>SFX_secLord_LayEggs_L2_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_LayEggs_L2_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1008210616" Language="SFX">
+					<ShortName>SFX_secMinion_attack_L1_04.wav</ShortName>
+					<Path>SFX\SFX_secMinion_attack_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1012932497" Language="SFX">
+					<ShortName>SFX_Pillar_Hit_L2_02.wav</ShortName>
+					<Path>SFX\SFX_Pillar_Hit_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1024851184" Language="SFX">
+					<ShortName>SFX_FS_secLord_L1_03.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L1_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1025140472" Language="SFX">
+					<ShortName>SFX_FS_Heroes_10.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_10_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1036358124" Language="SFX">
+					<ShortName>SFX_Warrior_attackC_01.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackC_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1044614995" Language="SFX">
+					<ShortName>SFX_Warrior_attackResoLow_02.wav</ShortName>
+					<Path>SFX\SFX_Warrior_attackResoLow_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1045913062" Language="SFX">
+					<ShortName>SFX_secLord_attack_L2_02.wav</ShortName>
+					<Path>SFX\SFX_secLord_attack_L2_02_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1049195978" Language="SFX">
+					<ShortName>SFX_FS_secLord_L2_08.wav</ShortName>
+					<Path>SFX\SFX_FS_secLord_L2_08_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1050366484" Language="SFX">
+					<ShortName>SFX_Bird_Buzzard_03.wav</ShortName>
+					<Path>SFX\SFX_Bird_Buzzard_03_B1E6DA9B.wem</Path>
+				</File>
+				<File Id="1050497051" Language="SFX">
+					<ShortName>SFX_Chronolith_Idle.wav</ShortName>
+					<Path>SFX\SFX_Chronolith_Idle_BA19D509.wem</Path>
+				</File>
+				<File Id="1055318021" Language="SFX">
+					<ShortName>SFX_secLord_attack_L1_01.wav</ShortName>
+					<Path>SFX\SFX_secLord_attack_L1_01_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1062504236" Language="SFX">
+					<ShortName>SFX_Heroes_Hit_03.wav</ShortName>
+					<Path>SFX\SFX_Heroes_Hit_03_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1063850545" Language="SFX">
+					<ShortName>SFX_secMinion_attack_L2_04.wav</ShortName>
+					<Path>SFX\SFX_secMinion_attack_L2_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1066627436" Language="SFX">
+					<ShortName>SFX_secTank_attack_L1_04.wav</ShortName>
+					<Path>SFX\SFX_secTank_attack_L1_04_0EEECE5B.wem</Path>
+				</File>
+				<File Id="1071217512" Language="SFX">
+					<ShortName>SFX_FS_Heroes_04.wav</ShortName>
+					<Path>SFX\SFX_FS_Heroes_04_0EEECE5B.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
+		</SoundBank>
+	</SoundBanks>
+</SoundBanksInfo>

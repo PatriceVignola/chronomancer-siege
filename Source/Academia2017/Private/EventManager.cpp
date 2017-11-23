@@ -1,0 +1,21 @@
+#include "Academia2017.h"
+#include "EventManager.h"
+
+FMageHealthChanged EventManager::OnMageChangedHealth;
+FWarriorHealthChanged EventManager::OnWarriorChangedHealth;
+FRecordPressedDelegate EventManager::OnRecordPressed;
+FRecordReleasedDelegate EventManager::OnRecordReleased;
+FRecordingLimitReached EventManager::OnRecordingLimitReached;
+FGlobalRewindFinishedDelegate EventManager::OnRewindFinished;
+FGlobalDeathRewindFinishedDelegate EventManager::OnDeathRewindFinished;
+FGameOverDelegate EventManager::OnGameOver;
+FFightStarted EventManager::OnFightStarted;
+FFightEnded EventManager::OnFightEnded;
+FCheckpointReachedDelegate EventManager::OnCheckpointReached;
+FRecordInteruptRequestedDelegate EventManager::OnRecordInteruptRequested;
+FCharactersDiedDelegate EventManager::OnCharacterDied;
+FPlayerJoinedGameDelegate EventManager::OnPlayerJoined;
+FMageSpawnedDelegate EventManager::OnMageSpawned;
+FDeathMusicLayerRequested EventManager::OnDeathMusicLayerRequested;
+FOnLevelFinishedStreaming EventManager::OnLevelFinishedStreaming;
+FRecordCancelledDelegate EventManager::OnRecordCancelled;
