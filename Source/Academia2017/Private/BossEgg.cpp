@@ -1,5 +1,6 @@
 #include "Academia2017.h"
 #include "BossEgg.h"
+#include "DestructibleComponent.h"
 
 ABossEgg::ABossEgg()
 {

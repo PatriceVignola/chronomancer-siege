@@ -2,9 +2,10 @@
 
 #include "GameFramework/Actor.h"
 #include "ActivableHitbox.h"
-#include "Components/DestructibleComponent.h"
 #include "EnemyBase.h"
 #include "BossEgg.generated.h"
+
+class UDestructibleComponent;
 
 UCLASS()
 class ACADEMIA2017_API ABossEgg : public AActor
