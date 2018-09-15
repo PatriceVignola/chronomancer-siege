@@ -4,6 +4,7 @@
 	AkAmbientSound.cpp:
 =============================================================================*/
 
+#include "AkAmbientSound.h"
 #include "AkAudioDevice.h"
 #include "AkAudioClasses.h"
 #include "Net/UnrealNetwork.h"
@@ -19,7 +20,8 @@ Super(ObjectInitializer)
 	StopWhenOwnerIsDestroyed = true;
 	CurrentlyPlaying = false;
 	
-	AkComponent = ObjectInitializer.CreateDefaultSubobject<UAkComponent>(this, TEXT("AkAudioComponent0"));
+	static const FName ComponentName = TEXT("AkAudioComponent0");
+	AkComponent = ObjectInitializer.CreateDefaultSubobject<UAkComponent>(this, ComponentName);
 	
 	AkComponent->StopWhenOwnerDestroyed = StopWhenOwnerIsDestroyed;
 
@@ -29,6 +31,7 @@ Super(ObjectInitializer)
 
 	//bNoDelete = true;
 	bHidden = true;
+	AutoPost = false;
 }
 
 void AAkAmbientSound::PostLoad()
@@ -45,15 +48,20 @@ void AAkAmbientSound::PostLoad()
 void AAkAmbientSound::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	AkComponent->UpdateAkReverbVolumeList(AkComponent->GetComponentLocation());
+	AkComponent->UpdateAkLateReverbComponentList(AkComponent->GetComponentLocation());
 }
+
+void AAkAmbientSound::BeginPlay()
+{
+	Super::BeginPlay();
+	if (AutoPost)
+	{
+		StartAmbientSound();
+	}
+}
+
 
 #if WITH_EDITOR
-void AAkAmbientSound::CheckForErrors()
-{
-	Super::CheckForErrors();
-}
-
 void AAkAmbientSound::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	if( AkComponent )
@@ -82,16 +90,11 @@ void AAkAmbientSound::StartPlaying()
 {
 	if( !IsCurrentlyPlaying() )
 	{
-		FAkAudioDevice * AkAudioDevice = FAkAudioDevice::Get();
-		if( AkAudioDevice )
+		FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
+		if (AkAudioDevice)
 		{
 			AkAudioDevice->SetAttenuationScalingFactor(this, AkComponent->AttenuationScalingFactor);
-			FString EventName = AkComponent->EventName;
-			if (AkComponent->AkAudioEvent != NULL)
-			{
-				EventName = AkComponent->AkAudioEvent->GetName();
-			}
-			AkAudioDevice->PostEvent(EventName, this, 0, NULL, NULL, StopWhenOwnerIsDestroyed );
+			AkAudioDevice->PostEvent(GET_AK_EVENT_NAME(AkComponent->AkAudioEvent, AkComponent->EventName), this, 0, NULL, NULL, StopWhenOwnerIsDestroyed);
 		}
 	}
 }
@@ -107,11 +110,5 @@ void AAkAmbientSound::StopPlaying()
 
 bool AAkAmbientSound::IsCurrentlyPlaying()
 {
-	bool ret = false;
-	if (AkComponent)
-	{
-		ret = AkComponent->NumActiveEvents.GetValue() != 0;
-	}
-
-	return ret;
+	return AkComponent != nullptr && AkComponent->HasActiveEvents();
 }

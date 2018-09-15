@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "Matinee/InterpTrack.h"
+#include "IMatinee.h"
+
+#include "InterpTrackHelper.h"
 #include "InterpTrackAkAudioRTPCHelper.generated.h"
 
 UCLASS()

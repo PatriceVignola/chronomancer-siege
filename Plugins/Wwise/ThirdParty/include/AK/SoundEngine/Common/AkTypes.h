@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 // AkTypes.h
@@ -50,29 +50,24 @@ the specific language governing permissions and limitations under the License.
 	#endif
 #endif
 
-#ifdef AK_USE_STD_ATOMIC
-	// Apple, starting with iOS 10 and MacOS 10.12 is enforcing the type of objects on which we use Atomic Operations.
-	#include <stdatomic.h>
+#if defined(AK_CPU_X86_64) || defined(AK_CPU_ARM_64)
+#define AK_POINTER_64
+#endif // #if defined(AK_CPU_X86_64) || defined(AK_CPU_ARM_64)
 
-	typedef _Atomic(AkInt32)	AkAtomic32;			///< Signed 32-bit integer - Atomic Declaration
-	typedef _Atomic(AkInt64)	AkAtomic64;			///< Signed 64-bit integer - Atomic Declaration
-	typedef _Atomic(AkUInt32)	AkAtomicU32;		///< Unsigned 32-bit integer - Atomic Declaration
-	typedef _Atomic(AkIntPtr)	AkAtomicPtr;		///< Signed platform sized integer - Atomic Declaration
-#else
-	typedef AkInt32				AkAtomic32;			///< Signed 32-bit integer - Atomic Declaration
-	typedef AkInt64				AkAtomic64;			///< Signed 64-bit integer - Atomic Declaration
-	typedef AkUInt32			AkAtomicU32;		///< Unsigned 32-bit integer - Atomic Declaration
-	typedef AkIntPtr			AkAtomicPtr;		///< Signed platform sized integer - Atomic Declaration
-#endif
+typedef AkInt32				AkAtomic32;			///< Signed 32-bit integer - Atomic Declaration
+typedef AkInt64				AkAtomic64;			///< Signed 64-bit integer - Atomic Declaration
+typedef AkUInt32			AkAtomicU32;		///< Unsigned 32-bit integer - Atomic Declaration
+typedef AkIntPtr			AkAtomicPtr;		///< Signed platform sized integer - Atomic Declaration
 
 typedef AkUInt32		AkUniqueID;			 		///< Unique 32-bit ID
 typedef AkUInt32		AkStateID;			 		///< State ID
 typedef AkUInt32		AkStateGroupID;		 		///< State group ID
 typedef AkUInt32		AkPlayingID;		 		///< Playing ID
 typedef	AkInt32			AkTimeMs;			 		///< Time in ms
+typedef AkUInt16		AkPortNumber;				///< Port number
 typedef AkReal32		AkPitchValue;		 		///< Pitch value
 typedef AkReal32		AkVolumeValue;		 		///< Volume value( also apply to LFE )
-typedef AkUIntPtr		AkGameObjectID;		 		///< Game object ID
+typedef AkUInt64		AkGameObjectID;		 		///< Game object ID
 typedef AkReal32		AkLPFType;			 		///< Low-pass filter type
 typedef AkInt32			AkMemPoolId;		 		///< Memory pool ID
 typedef AkUInt32		AkPluginID;			 		///< Source or effect plug-in ID
@@ -95,14 +90,14 @@ typedef AkUInt32		AkArgumentValueID;			///< Argument value ID
 typedef AkUInt32		AkChannelMask;				///< Channel mask (similar to WAVE_FORMAT_EXTENSIBLE). Bit values are defined in AkSpeakerConfig.h.
 typedef AkUInt32		AkModulatorID;				///< Modulator ID
 typedef AkUInt32		AkAcousticTextureID;		///< Acoustic Texture ID
-typedef AkUInt32		AkDiffuseReverberatorID;	///< Acoustic Diffuser ID
+typedef AkUInt32		AkImageSourceID;			///< Image Source ID
+typedef AkUInt64		AkOutputDeviceID;			///< Audio Output device ID
 
 // Constants.
 static const AkPluginID					AK_INVALID_PLUGINID					= (AkPluginID)-1;		///< Invalid FX ID
 static const AkGameObjectID				AK_INVALID_GAME_OBJECT				= (AkGameObjectID)-1;	///< Invalid game object (may also mean all game objects)
 static const AkUniqueID					AK_INVALID_UNIQUE_ID				=  0;					///< Invalid unique 32-bit ID
 static const AkRtpcID					AK_INVALID_RTPC_ID					=  AK_INVALID_UNIQUE_ID;///< Invalid RTPC ID
-static const AkUInt32					AK_INVALID_LISTENER_INDEX			= (AkUInt32)-1;			///< Invalid listener index
 static const AkPlayingID				AK_INVALID_PLAYING_ID				=  AK_INVALID_UNIQUE_ID;///< Invalid playing ID
 static const AkUInt32					AK_DEFAULT_SWITCH_STATE				=  0;					///< Switch selected if no switch has been set yet
 static const AkMemPoolId				AK_INVALID_POOL_ID					= -1;					///< Invalid pool ID
@@ -114,7 +109,6 @@ static const AkBankID					AK_INVALID_BANK_ID					=  AK_INVALID_UNIQUE_ID;///< In
 static const AkArgumentValueID			AK_FALLBACK_ARGUMENTVALUE_ID		=  0;					///< Fallback argument value ID
 static const AkChannelMask				AK_INVALID_CHANNELMASK				=  0;					///< Invalid channel mask
 static const AkUInt32					AK_INVALID_OUTPUT_DEVICE_ID			=  AK_INVALID_UNIQUE_ID;///< Invalid Device ID
-static const AkUInt32					AK_MIXER_FX_SLOT					= (AkUInt32)-1;			///< Mixer slot
 
 // Priority.
 static const AkPriority					AK_DEFAULT_PRIORITY					=  50;					///< Default sound / I/O priority
@@ -126,7 +120,7 @@ static const AkPriority					AK_DEFAULT_BANK_IO_PRIORITY			= AK_DEFAULT_PRIORITY;
 static const AkReal32					AK_DEFAULT_BANK_THROUGHPUT			= 1*1024*1024/1000.f;	///<  Default bank load throughput (1 Mb/ms)
 
 // Bank version
-static const AkUInt32					AK_SOUNDBANK_VERSION =				120;					///<  Version of the soundbank reader
+static const AkUInt32					AK_SOUNDBANK_VERSION =				132;					///<  Version of the soundbank reader
 
 /// Standard function call result.
 enum AKRESULT
@@ -214,7 +208,14 @@ enum AKRESULT
 	AK_CommandTooLarge			= 81,	///< SDK command is too large to fit in the command queue.
 	AK_RejectedByFilter			= 82,	///< A play request was rejected due to the MIDI filter parameters.
 	AK_InvalidCustomPlatformName= 83,	///< Detecting incompatibility between Custom platform of banks and custom platform of connected application
-	AK_DLLCannotLoad			= 84	///< DLL could not be loaded, either because it is not found or one dependency is missing.
+	AK_DLLCannotLoad			= 84,	///< Plugin DLL could not be loaded, either because it is not found or one dependency is missing.
+	AK_DLLPathNotFound			= 85,	///< Plugin DLL search path could not be found.
+	AK_NoJavaVM					= 86,	///< No Java VM provided in AkInitSettings.
+	AK_OpenSLError				= 87,	///< OpenSL returned an error.  Check error log for more details.
+	AK_PluginNotRegistered		= 88,	///< Plugin is not registered.  Make sure to implement a AK::PluginRegistration class for it and use AK_STATIC_LINK_PLUGIN in the game binary.
+	AK_DataAlignmentError		= 89,	///< A pointer to audio data was not aligned to the platform's required alignment (check AkTypes.h in the platform-specific folder)
+	AK_DeviceNotCompatible		= 90,	///< Incompatible Audio device.
+	AK_DuplicateUniqueID		= 91,	///< Two Wwise objects share the same ID.
 };
 
 /// Game sync group type
@@ -225,17 +226,23 @@ enum AkGroupType
 	AkGroupType_State	= 1  ///< Type state
 };
 
+/// Configured audio settings
+struct AkAudioSettings
+{
+	AkUInt32			uNumSamplesPerFrame;		///< Number of samples per audio frame (256, 512, 1024 or 2048).
+	AkUInt32			uNumSamplesPerSecond;		///< Number of samples per second.
+};
+
 /// This structure allows the game to provide audio files to fill the external sources. See \ref AK::SoundEngine::PostEvent
 /// You can specify a streaming file or a file in-memory, regardless of the "Stream" option in the Wwise project.  
 /// \akwarning
-/// Make sure that only one of szFile, pInMemory or idFile is non-null.  The other 2 must be null.
+/// Make sure that only one of szFile, pInMemory or idFile is non-null. if both idFile and szFile are set, idFile is passed to low-level IO and szFile is used as stream name (for profiling purposes).
 /// \endakwarning
-/// \if Wii \aknote On the Wii, only mono files can be played from memory. \endaknote \endif
 struct AkExternalSourceInfo
 {
 	AkUInt32 iExternalSrcCookie;	///< Cookie identifying the source, given by hashing the name of the source given in the project.  See \ref AK::SoundEngine::GetIDFromString. \aknote If an event triggers the playback of more than one external source, they must be named uniquely in the project therefore have a unique cookie) in order to tell them apart when filling the AkExternalSourceInfo structures. \endaknote
 	AkCodecID idCodec;				///< Codec ID for the file.  One of the audio formats defined in AkTypes.h (AKCODECID_XXX)
-	AkOSChar * szFile;				///< File path for the source.  If not NULL, the source will be streaming from disk.  Set pInMemory and idFile to NULL.
+	AkOSChar * szFile;				///< File path for the source.  If not NULL, the source will be streaming from disk.  Set pInMemory to NULL. If idFile is set, this field is used as stream name (for profiling purposes).
 	void* pInMemory;				///< Pointer to the in-memory file.  If not NULL, the source will be read from memory.  Set szFile and idFile to NULL.
 	AkUInt32 uiMemorySize;			///< Size of the data pointed by pInMemory
 	AkFileID idFile;				///< File ID.  If not zero, the source will be streaming from disk.  This ID can be anything.  Note that you must override the low-level IO to resolve this ID to a real file.  See \ref streamingmanager_lowlevel for more information on overriding the Low Level IO.
@@ -296,12 +303,27 @@ enum AkConnectionType
 	ConnectionType_Direct = 0x0,			///< Direct (main, dry) connection.
 	ConnectionType_GameDefSend = 0x1,		///< Connection by a game-defined send.
 	ConnectionType_UserDefSend = 0x2,		///< Connection by a user-defined send.
-	ConnectionType_CrossDeviceSend = 0x4	///< Connection between graphs with different endpoints. ConnectionType_CrossDeviceSend can be ORed with ConnectionType_XXDefSend.
 };
 
 /// 3D vector.
 struct AkVector
 {
+	inline AkVector operator+(const AkVector& b) const
+	{
+		AkVector v;
+
+		v.X = X + b.X;
+		v.Y = Y + b.Y;
+		v.Z = Z + b.Z;
+
+		return v;
+	}
+
+	inline void Zero()
+	{
+		X = 0; Y = 0; Z = 0;
+	}
+
     AkReal32		X;	///< X Position
     AkReal32		Y;	///< Y Position
     AkReal32		Z;	///< Z Position
@@ -433,6 +455,12 @@ typedef AkTransform AkSoundPosition;
 /// Positioning information for a listener.
 typedef AkTransform AkListenerPosition;
 
+/// Obstruction/occlusion pair for a position
+struct AkObstructionOcclusionValues
+{
+	AkReal32 occlusion;    ///< OcclusionLevel: [0.0f..1.0f]
+	AkReal32 obstruction;  ///< ObstructionLevel: [0.0f..1.0f]
+};
 
 /// Positioning information for a sound, with specified subset of its channels.
 struct AkChannelEmitter
@@ -454,78 +482,74 @@ struct AkSphericalCoord : public AkPolarCoord
 	AkReal32		phi;			///< Elevation
 };
 
-/// Emitter-listener pair: Position of an emitter relative to a listener, in spherical coordinates. 
-/// The structure also carries the angle between the emitter's orientation and the line that joins
-/// the emitter and the listener.
-class AkEmitterListenerPair : public AkSphericalCoord
+/// Emitter-listener pair: Positioning data pertaining to a single pair of emitter and listener.
+class AkEmitterListenerPair
 {
 public:
 	/// Constructor.
 	AkEmitterListenerPair() 
-		: fEmitterAngle( 0.f )
+		: fDistance( 0.f )
+		, fEmitterAngle( 0.f )
+		, fListenerAngle( 0.f )
 		, fDryMixGain( 1.f )
 		, fGameDefAuxMixGain( 1.f )
 		, fUserDefAuxMixGain( 1.f )
+		, fOcclusion(0.f)
+		, fObstruction(0.f)
+		, fSpread(0.f)
+		, fFocus(0.f)
 		, uEmitterChannelMask( 0xFFFFFFFF )
-		, m_uListenerMask( 0 )
+		, m_uListenerID( 0 )
 	{
-		r = 0;
-		theta = 0;
-		phi = 0;
 	}
 	/// Destructor.
 	~AkEmitterListenerPair() {}
 
 	/// Get distance.
-	inline AkReal32 Distance() const { return r; }
-
-	/// Get azimuth angle, in radians. Positive direction is towards the right.
-	inline AkReal32 Azimuth() const { return theta; }
-
-	/// Get elevation angle, in radians. Positive direction is towards the top.
-	inline AkReal32 Elevation() const { return phi; }
+	inline AkReal32 Distance() const { return fDistance; }
 
 	/// Get the absolute angle, in radians between 0 and pi, of the emitter's orientation relative to 
 	/// the line that joins the emitter and the listener.
 	inline AkReal32 EmitterAngle() const { return fEmitterAngle; }
 
+	/// Get the absolute angle, in radians between 0 and pi, of the listener's orientation relative to
+	/// the line that joins the emitter and the listener
+	inline AkReal32 ListenerAngle() const { return fListenerAngle; }
+
+	/// Get the occlusion factor for this emitter-listener pair
+	inline AkReal32 Occlusion() const { return fOcclusion; }
+
+	/// Get the obstruction factor for this emitter-listener pair
+	inline AkReal32 Obstruction() const { return fObstruction; }
+
 	/// Get the emitter-listener-pair-specific gain (due to distance and cone attenuation), linear [0,1], for a given connection type.
 	inline AkReal32 GetGainForConnectionType(AkConnectionType in_eType) const 
 	{
-		AkConnectionType eType = (AkConnectionType)(in_eType & ~ConnectionType_CrossDeviceSend);
-		if (eType == ConnectionType_Direct)
+		if (in_eType == ConnectionType_Direct)
 			return fDryMixGain;
-		else if (eType == ConnectionType_GameDefSend)
+		else if (in_eType == ConnectionType_GameDefSend)
 			return fGameDefAuxMixGain;
 		else
 			return fUserDefAuxMixGain;
 	}
 
-	/// Get full listener mask.
-	inline AkUInt32 ListenerMask() const { return m_uListenerMask; }
+	/// Get listener ID associated with the emitter-listener pair.
+	inline AkGameObjectID ListenerID() const { return m_uListenerID; }
 	
-	// Get listener index of first listener assigned to this emitter-listener pair. 
-	/// There is always only one listener if this is a 3D sound.
-	inline AkUInt8 ListenerIdx() const 
-	{ 
-		AkUInt8 uListenerIdx = 0;
-		AkUInt8 uListenerMask = m_uListenerMask;
-		while ( !( uListenerMask & 0x01 ) )
-		{
-			uListenerMask >>= 1;
-			++uListenerIdx;
-		}
-		return uListenerIdx; 
-	}
-
-	AkTransform emitter;		/// Emitter position.
-	AkReal32 fEmitterAngle;		/// Angle between position vector and emitter orientation.
-	AkReal32 fDryMixGain;		/// Emitter-listener-pair-specific gain (due to distance and cone attenuation) for direct connections.
-	AkReal32 fGameDefAuxMixGain;/// Emitter-listener-pair-specific gain (due to distance and cone attenuation) for game-defined send connections.
-	AkReal32 fUserDefAuxMixGain;/// Emitter-listener-pair-specific gain (due to distance and cone attenuation) for user-defined send connections.
+	AkTransform emitter;				/// Emitter position.
+	AkReal32 fDistance;					/// Distance between emitter and listener.
+	AkReal32 fEmitterAngle;				/// Angle between position vector and emitter orientation.
+	AkReal32 fListenerAngle;			/// Angle between position vector and listener orientation.
+	AkReal32 fDryMixGain;				/// Emitter-listener-pair-specific gain (due to distance and cone attenuation) for direct connections.
+	AkReal32 fGameDefAuxMixGain;		/// Emitter-listener-pair-specific gain (due to distance and cone attenuation) for game-defined send connections.
+	AkReal32 fUserDefAuxMixGain;		/// Emitter-listener-pair-specific gain (due to distance and cone attenuation) for user-defined send connections.
+	AkReal32 fOcclusion;				/// Emitter-listener-pair-specific occlusion factor
+	AkReal32 fObstruction;				/// Emitter-listener-pair-specific obstruction factor
+	AkReal32 fSpread;					/// Emitter-listener-pair-specific spread
+	AkReal32 fFocus;					/// Emitter-listener-pair-specific focus
 	AkChannelMask uEmitterChannelMask;	/// Channels of the emitter that apply to this ray.
 protected:
-	AkUInt8 m_uListenerMask;	/// Listener mask (in the 3D case, only one bit should be set).
+	AkGameObjectID m_uListenerID;		/// Listener game object ID.
 };
 
 /// Listener information.
@@ -535,10 +559,12 @@ struct AkListener
 		: fScalingFactor( 1.0f )
 		, bSpatialized( true )
 	{}
-	AkListenerPosition	position;		/// Listener position (see AK::SoundEngine::SetListenerPosition()).
+	AkListenerPosition	position;		/// Listener position (see AK::SoundEngine::SetPosition()).
 	AkReal32			fScalingFactor;	/// Listener scaling factor (see AK::SoundEngine::SetListenerScalingFactor()).
 	bool				bSpatialized;	/// Whether listener is spatialized or not (see AK::SoundEngine::SetListenerSpatialization()).
 };
+
+// If you modify AkCurveInterpolation, don't forget to modify WAAPI validation schema accordingly.
 
 /// Curve interpolation types
 enum AkCurveInterpolation
@@ -563,27 +589,12 @@ enum AkCurveInterpolation
 };
 #define AKCURVEINTERPOLATION_NUM_STORAGE_BIT 5 ///< Internal storage restriction, for internal use only.
 
-#ifndef AK_MAX_AUX_PER_OBJ
-	#define AK_MAX_AUX_PER_OBJ			(4) ///< Maximum number of environments in which a single game object may be located at a given time.
-
-	// This define is there to Limit the number of Aux per sound that can be processed.
-	// This value must be >= AK_MAX_AUX_PER_OBJ and >= AK_NUM_AUX_SEND_PER_OBJ (4)
-	#define AK_MAX_AUX_SUPPORTED					(AK_MAX_AUX_PER_OBJ + 4)
-#else
-	// This define is there to Limit the number of Aux per sound that can be processed.
-	// This value must be >= AK_MAX_AUX_PER_OBJ and >= AK_MAX_AUX_PER_NODE
-	#define AK_MAX_AUX_SUPPORTED					AK_MAX_AUX_PER_OBJ
-
-#endif
-
-#define AK_NUM_LISTENERS						(8)	///< Number of listeners that can be used.
-#define AK_LISTENERS_MASK_ALL					(0xFFFFFFFF)	///< All listeners.
-
 /// Auxiliary bus sends information per game object per given auxiliary bus.
 struct AkAuxSendValue
 {
-	AkAuxBusID auxBusID;	///< Auxilliary bus ID.
-	AkReal32 fControlValue; ///< Value in the range [0.0f:1.0f], send level to auxiliary bus.	
+	AkGameObjectID listenerID;	///< Game object ID of the listener associated with this send.
+	AkAuxBusID auxBusID;		///< Auxiliary bus ID.
+	AkReal32 fControlValue;		///< Value in the range [0.0f:1.0f], send level to auxiliary bus.	
 };
 
 /// Volume ramp specified by end points "previous" and "next".
@@ -670,7 +681,6 @@ namespace AK
 #define AKCOMPANYID_WAVEARTS			(257)	///< WaveArts
 #define AKCOMPANYID_PHONETICARTS		(258)	///< Phonetic Arts
 #define AKCOMPANYID_IZOTOPE				(259)	///< iZotope
-#define AKCOMPANYID_GENAUDIO			(260)	///< GenAudio
 #define AKCOMPANYID_CRANKCASEAUDIO		(261)	///< Crankcase Audio
 #define AKCOMPANYID_IOSONO				(262)	///< IOSONO
 #define AKCOMPANYID_AUROTECHNOLOGIES	(263)	///< Auro Technologies
@@ -683,6 +693,11 @@ namespace AK
 #define AKCOMPANYID_NURULIZE			(270) 	///< Nurulize
 #define AKCOMPANYID_SUPERPOWERED		(271)	///< Super Powered
 #define AKCOMPANYID_GOOGLE				(272)	///< Google
+//#define AKCOMPANYID_NVIDIA			(273)	///< NVIDIA		// Commented out to avoid redefinition, provider is already defining it.
+//#define AKCOMPANYID_RESERVED			(274)	///< Reserved	// Commented out to avoid redefinition, provider is already defining it.
+//#define AKCOMPANYID_MICROSOFT			(275)	///< Microsoft	// Commented out to avoid redefinition, provider is already defining it.
+//#define AKCOMPANYID_YAMAHA			(276)	///< YAMAHA		// Commented out to avoid redefinition, provider is already defining it.
+#define AKCOMPANYID_VISISONICS			(277)	///< Visisonics
 
 // File/encoding types of Audiokinetic.
 #define AKCODECID_BANK                  (0)		///< Bank encoding
@@ -690,7 +705,7 @@ namespace AK
 #define AKCODECID_ADPCM                 (2)		///< ADPCM encoding
 #define AKCODECID_XMA                   (3)		///< XMA encoding
 #define AKCODECID_VORBIS				(4)		///< Vorbis encoding
-#define AKCODECID_WIIADPCM              (5)		///< ADPCM encoding on the Wii
+#define AKCODECID_WIIADPCM				(5)		///< ADPCM encoding on the Wii
 #define AKCODECID_PCMEX					(7)		///< Standard PCM WAV file parser for Wwise Authoring
 #define AKCODECID_EXTERNAL_SOURCE       (8)		///< External Source (unknown encoding)
 #define AKCODECID_XWMA					(9)		///< xWMA encoding
@@ -701,12 +716,23 @@ namespace AK
 #define AKCODECID_PROFILERCAPTURE		(14)	///< Profiler capture file (.prof) as written through AK::SoundEngine::StartProfilerCapture
 #define AKCODECID_ANALYSISFILE			(15)	///< Analysis file
 #define AKCODECID_MIDI					(16)	///< MIDI file
+#define AKCODECID_OPUSNX                (17)    ///< OpusNX encoding
+#define AKCODECID_CAF					(18)	///< CAF file
+#define AKCODECID_AKOPUS                (19)    ///< Opus encoding
+
+#define AKPLUGINID_METER				(129)  ///< Meter Plugin
+#define AKPLUGINID_RECORDER				(132)  ///< Recorder Plugin
+
+#define AKEXTENSIONID_SPATIALAUDIO			(800)	///< Spatial Audio
+#define AKEXTENSIONID_INTERACTIVEMUSIC		(801)	///< Interactive Music
 
 //The following are internally defined
 #define	AK_WAVE_FORMAT_VAG				0xFFFB
 #define	AK_WAVE_FORMAT_AT9				0xFFFC
 #define	AK_WAVE_FORMAT_VORBIS  			0xFFFF
 #define	AK_WAVE_FORMAT_AAC				0xAAC0
+#define AK_WAVE_FORMAT_OPUSNX           0x3039
+#define AK_WAVE_FORMAT_OPUS             0x3040
 #define WAVE_FORMAT_XMA2				0x166
 
 class IAkSoftwareCodec;
@@ -723,6 +749,8 @@ namespace AK
 {
 	namespace SoundEngine
 	{
+		// If you modify MultiPositionType, don't forget to modify WAAPI validation schema accordingly.
+
 		/// MultiPositionType.
 		/// \sa
 		/// - AK::SoundEngine::SetMultiplePosition()
@@ -736,19 +764,21 @@ namespace AK
 	}
 }
 
-/// 3D Positioning type.
-#define PANNER_NUM_STORAGE_BITS 2
-enum AkPannerType
+#define AK_PANNER_NUM_STORAGE_BITS 3
+/// Speaker panning type: type of panning logic when object is not 3D spatialized (i.e. when Ak3DSpatializationMode is AK_SpatializationMode_None).
+enum AkSpeakerPanningType
 {
-	Ak2D		= 0,	///< 2D Panner
-	Ak3D		= 1		///< 3D Panner
+	AK_DirectSpeakerAssignment	= 0,	///< No panning: route to matching channels between input and output.
+	AK_BalanceFadeHeight		= 1		///< Balance-Fade-Height: Traditional "box" or "car"-like panner.
 };
 
-#define POSSOURCE_NUM_STORAGE_BITS 2
-enum AkPositionSourceType
+#define AK_POSSOURCE_NUM_STORAGE_BITS 3
+/// 3D position type: defines what acts as the emitter position for computing spatialization against the listener. Used when Ak3DSpatializationMode is AK_SpatializationMode_PositionOnly or AK_SpatializationMode_PositionAndOrientation.
+enum Ak3DPositionType
 {
-	AkUserDef			= 0,	///< 3D user-defined
-	AkGameDef			= 1		///< 3D game-defined
+	AK_3DPositionType_Emitter = 0,					///< 3D spatialization is computed directly from the emitter game object position.
+	AK_3DPositionType_EmitterWithAutomation = 1,	///< 3D spatialization is computed from the emitter game object position, translated by user-defined automation.
+	AK_3DPositionType_ListenerWithAutomation = 2	///< 3D spatialization is computed from the listener game object position, translated by user-defined automation.
 };
 
 /// Headphone / speakers panning rules
@@ -758,11 +788,21 @@ enum AkPanningRule
 	AkPanningRule_Headphones 	= 1		///< Left and right positioned 180 degrees apart.
 };
 
-/// Bus type bit field.
-enum AkBusType
+#define AK_SPAT_NUM_STORAGE_BITS 3
+/// 3D spatialization mode.
+enum Ak3DSpatializationMode
 {
-	AkBusType_Master			= 0x01,	///< 1 = master, 0 = non-master.
-	AkBusType_Primary			= 0x02	///< 1 = primary bus tree, 0 = secondary bus tree.
+	AK_SpatializationMode_None = 0,						///< No spatialization
+	AK_SpatializationMode_PositionOnly = 1,				///< Spatialization based on emitter position only.
+	AK_SpatializationMode_PositionAndOrientation = 2	///< Spatialization based on both emitter position and emitter orientation.
+};
+
+/// Bus type bit field.
+enum AkBusHierarchyFlags
+{
+	AkBusHierarchy_Primary		= 1 << 0,	///< Flag is set to indicate the primary bus hierarchy.
+	AkBusHierarchy_Secondary	= 1 << 1,	///< Flag is set to indicate the secondary bus hierarchy.
+	AkBusHierarchy_IsMaster		= 1 << 7	///< Flag is set to indicate a master bus (may be used in combination with other flags).
 };
 
 #define AK_MAX_BITS_METERING_FLAGS	(5)	// Keep in sync with AkMeteringFlags.
@@ -775,7 +815,25 @@ enum AkMeteringFlags
 	AK_EnableBusMeter_TruePeak	= 1 << 1,		///< Enable computation of true peak metering (most CPU and memory intensive).
 	AK_EnableBusMeter_RMS		= 1 << 2,		///< Enable computation of RMS metering.
 	// 1 << 3 is reserved.
-	AK_EnableBusMeter_KPower	= 1 << 4		///< Enable computation of K-weighted power metering (used as a basis for computing loudness, as defined by ITU-R BS.1770).
+	AK_EnableBusMeter_KPower	= 1 << 4,		///< Enable computation of K-weighted power metering (used as a basis for computing loudness, as defined by ITU-R BS.1770).
+	AK_EnableBusMeter_3DMeter = 1 << 5
+};
+
+/// Plug-in type.
+/// \sa
+/// - AkPluginInfo
+enum AkPluginType
+{
+	AkPluginTypeNone = 0,	///< Unknown/invalid plug-in type.
+	AkPluginTypeCodec = 1,	///< Compressor/decompressor plug-in (allows support for custom audio file types).
+	AkPluginTypeSource = 2,	///< Source plug-in: creates sound by synthesis method (no input, just output).
+	AkPluginTypeEffect = 3,	///< Effect plug-in: applies processing to audio data.
+	//AkPluginTypeMotionDevice = 4,	///< Motion Device plug-in: feeds movement data to devices. Deprecated by Motion refactor.
+	//AkPluginTypeMotionSource = 5,	///< Motion Device source plug-in: feeds movement data to device busses. Deprecated by Motion refactor.
+	AkPluginTypeMixer = 6,	///< Mixer plug-in: mix voices at the bus level.
+	AkPluginTypeSink = 7,	///< Sink plug-in: implement custom sound engine end point.
+	AkPluginTypeGlobalExtension = 8,	///< Global Extension plug-in: (e.g. Spatial Audio, Interactive Music)
+	AkPluginTypeMask = 0xf 	///< Plug-in type mask is 4 bits.
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -832,7 +890,6 @@ struct WwiseObjectID : public WwiseObjectIDext
 	}
 };
 
-#ifndef __SPU__
 /// Public data structures for converted file format.
 namespace AkFileParser
 {
@@ -845,10 +902,17 @@ namespace AkFileParser
 	};
 #pragma pack(pop)
 }
-#endif // !__SPU__
 
 #ifndef AK_OS_STRUCT_ALIGN
 #define AK_OS_STRUCT_ALIGN	4				///< OS Structures need to be aligned at 4 bytes.
+#endif
+
+#ifndef AK_64B_OS_STRUCT_ALIGN
+#define AK_64B_OS_STRUCT_ALIGN	8				///< OS Structures need to be aligned at 8 bytes.
+#endif
+
+#ifndef AK_ALIGN
+#define AK_ALIGN(__declaration__, uAlignmentSize) __declaration__ ///< Default definition for declaration that might need to be aligned on some platforms. By default, no alignment will be done.
 #endif
 
 #if !defined(AK_ENDIANNESS_LITTLE) && !defined(AK_ENDIANNESS_BIG)
@@ -857,6 +921,10 @@ namespace AkFileParser
 
 #ifndef AK_UNALIGNED
 #define AK_UNALIGNED						///< Refers to the __unaligned compilation flag available on some platforms. Note that so far, on the tested platform this should always be placed before the pointer symbol *.
+#endif
+
+#ifndef AK_FINAL
+#define AK_FINAL
 #endif
 
 #ifndef AK_ASYNC_OPEN_DEFAULT
@@ -870,10 +938,6 @@ namespace AkFileParser
 #ifndef AK_CAPTURE_TYPE_FLOAT
 typedef AkInt16		AkCaptureType;			///< Default value: capture type is short.
 #endif
-
-#if defined(AK_CPU_X86_64) || defined(AK_CPU_ARM_64)
-	#define AK_POINTER_64
-#endif // #if defined(AK_CPU_X86_64) || defined(AK_CPU_ARM_64)
 
 #define AkRegister
 

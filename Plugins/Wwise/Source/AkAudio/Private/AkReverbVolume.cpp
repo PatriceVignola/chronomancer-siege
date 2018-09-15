@@ -4,9 +4,13 @@
 	AkReverbVolume.cpp:
 =============================================================================*/
 
+#include "AkReverbVolume.h"
 #include "AkAudioDevice.h"
 #include "AkAudioClasses.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/BrushComponent.h"
+#include "Model.h"
+#include "AkCustomVersion.h"
 
 /*------------------------------------------------------------------------------------
 	AAkReverbVolume
@@ -16,7 +20,7 @@ AAkReverbVolume::AAkReverbVolume(const class FObjectInitializer& ObjectInitializ
 	Super(ObjectInitializer)
 {
 	// Property initialization
-	static FName CollisionProfileName(TEXT("OverlapAll"));
+	static const FName CollisionProfileName(TEXT("OverlapAll"));
 	UBrushComponent* BrushComp = GetBrushComponent();
 	if (BrushComp)
 	{
@@ -25,72 +29,35 @@ AAkReverbVolume::AAkReverbVolume(const class FObjectInitializer& ObjectInitializ
 
 	bColored = true;
 	BrushColor = FColor(0, 255, 255, 255);
+	
+	bEnabled_DEPRECATED = true;
+	SendLevel_DEPRECATED = 1.0f;
+	FadeRate_DEPRECATED = 0.5f;
+	Priority_DEPRECATED = 1.0f;
 
-	SendLevel = 1.0f;
-	FadeRate = 0.5f;
-	Priority = 1.0f;
-
-	NextLowerPriorityAkReverbVolume = NULL;
-
-	bEnabled = true;
+	static const FName LateReverbName = TEXT("LateReverb");
+	LateReverbComponent = ObjectInitializer.CreateDefaultSubobject<UAkLateReverbComponent>(this, LateReverbName);
 }
 
-void AAkReverbVolume::GetLifetimeReplicatedProps( TArray< FLifetimeProperty > & OutLifetimeProps ) const
+void AAkReverbVolume::Serialize(FArchive& Ar)
 {
-	Super::GetLifetimeReplicatedProps( OutLifetimeProps );
-	DOREPLIFETIME( AAkReverbVolume, bEnabled );
+	Super::Serialize(Ar);
+
+	Ar.UsingCustomVersion(FAkCustomVersion::GUID);
 }
 
-uint32 AAkReverbVolume::GetAuxBusId() const
+void AAkReverbVolume::PostLoad()
 {
-	if (AuxBus)
+	Super::PostLoad();
+	const int32 AkVersion = GetLinkerCustomVersion(FAkCustomVersion::GUID);
+
+	if (LateReverbComponent && AkVersion < FAkCustomVersion::AddedSpatialAudio)
 	{
-		return AuxBus->GetAuxBusId();
-	}
-	else
-	{
-		return AK::SoundEngine::GetIDFromString(TCHAR_TO_ANSI(*AuxBusName));
-	}
-}
-
-
-#if WITH_EDITOR
-void AAkReverbVolume::CheckForErrors()
-{
-	Super::CheckForErrors();
-}
-
-void AAkReverbVolume::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	SendLevel = FMath::Clamp<float>( SendLevel, 0.0f, 1.0f );
-	if( FadeRate < 0.f )
-	{
-		FadeRate = 0.f;
+		LateReverbComponent->bEnable			= bEnabled_DEPRECATED;
+		LateReverbComponent->AuxBus				= AuxBus_DEPRECATED;
+		LateReverbComponent->AuxBusName			= AuxBusName_DEPRECATED;
+		LateReverbComponent->SendLevel			= SendLevel_DEPRECATED;
+		LateReverbComponent->FadeRate			= FadeRate_DEPRECATED;
+		LateReverbComponent->Priority			= Priority_DEPRECATED;
 	}
 }
-#endif // WITH_EDITOR
-
-void AAkReverbVolume::PostRegisterAllComponents()
-{
-	Super::PostRegisterAllComponents();
-	FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
-	if( AkAudioDevice )
-	{
-		AkAudioDevice->AddAkReverbVolumeInList(this);
-	}
-}
-
-void AAkReverbVolume::PostUnregisterAllComponents()
-{
-	Super::PostUnregisterAllComponents();
-	FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
-	if( AkAudioDevice )
-	{
-		AkAudioDevice->RemoveAkReverbVolumeFromList(this);
-	}
-}
-
-
-

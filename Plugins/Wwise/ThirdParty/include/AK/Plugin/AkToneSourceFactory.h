@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 #pragma once
@@ -34,4 +34,3 @@ the specific language governing permissions and limitations under the License.
 
 
 AK_STATIC_LINK_PLUGIN(AkToneSource)
-AK_STATIC_LINK_PLUGIN(AkToneSourceMotion)

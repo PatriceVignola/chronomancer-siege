@@ -4,9 +4,9 @@
 	InterpTrackAkAudioEvent.cpp:
 =============================================================================*/
 
+#include "InterpTrackAkAudioEvent.h"
 #include "AkAudioDevice.h"
 #include "AkAudioEvent.h"
-#include "InterpTrackAkAudioEvent.h"
 #include "InterpTrackInstAkAudioEvent.h"
 #include "EngineClasses.h"
 #include "InterpolationHitProxy.h"
@@ -226,14 +226,7 @@ void UInterpTrackAkAudioEvent::UpdateTrack(float NewPosition, UInterpTrackInst* 
 			FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
 			if (AudioDevice)
 			{
-				if (AkEvent)
-				{
-					AudioDevice->PostEvent(AkEvent, Actor);
-				}
-				else
-				{
-					AudioDevice->PostEvent(AkEvenTrackKey.EventName, Actor);
-				}
+				AudioDevice->PostEvent(GET_AK_EVENT_NAME(AkEvent, AkEvenTrackKey.EventName), Actor);
 			}
 		}
 	}

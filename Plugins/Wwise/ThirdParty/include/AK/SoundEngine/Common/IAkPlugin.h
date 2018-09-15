@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 /// \file
@@ -44,68 +44,14 @@ the specific language governing permissions and limitations under the License.
 #include <AK/SoundEngine/Common/AkCallback.h>
 #include <AK/AkWwiseSDKVersion.h>
 
-#ifndef AK_WII
-// math.h may cause conflicts on the Wii due to inclusion order.
 #include <math.h>
-#endif
 
 #if defined AK_CPU_X86  || defined AK_CPU_X86_64
 #include <xmmintrin.h>
 #endif
 
-#ifdef AK_XBOX360
-#include "ppcintrinsics.h"
-#endif
-
-#ifdef __PPU__
-#include <altivec.h>
-#include <ppu_intrinsics.h>
-#include <stdlib.h>
-#include <string.h>
-#endif
-
-#ifdef AK_PS3
-#include <AK/Plugin/PluginServices/PS3/MultiCoreServices.h>
-#endif
-
-#ifdef AK_WII
-#include <revolution/ax.h>
-#endif
-
-#ifdef AK_WIIU
-#include <cafe/ax.h>
-#endif
-
-#ifdef AK_3DS
-#include <nn/snd.h>
-#endif
-
-#ifdef AK_VITA_HW
-#include <ngs.h>
-#endif
-
-
-#define AK_OLDEST_SUPPORTED_WWISESDK_VERSION ((2016<<8) | 1)
-
-/// Plug-in type.
-/// \sa
-/// - AkPluginInfo
-enum AkPluginType
-{
-	AkPluginTypeNone            = 0,	///< Unknown/invalid plug-in type.
-	AkPluginTypeCodec           = 1,	///< Compressor/decompressor plug-in (allows support for custom audio file types).
-	AkPluginTypeSource          = 2,	///< Source plug-in: creates sound by synthesis method (no input, just output).
-	AkPluginTypeEffect          = 3,	///< Effect plug-in: applies processing to audio data.
-	AkPluginTypeMotionDevice	= 4,	///< Motion Device plug-in: feeds movement data to devices.
-	AkPluginTypeMotionSource	= 5,	///< Motion Device source plug-in: feeds movement data to device busses.
-	AkPluginTypeMixer			= 6,	///< Mixer plug-in: mix voices at the bus level.
-	AkPluginTypeSink			= 7,	///< Sink plug-in: implement custom sound engine end point.
-	AkPluginTypeMask            = 0xf 	///< Plug-in type mask is 4 bits.
-};
-
 /// Plug-in information structure.
 /// \remarks The bIsInPlace field is only relevant for effect plug-ins.
-/// \remarks Currently asynchronous effects are only supported on PS3 effect plug-ins (insert effects have to be asynchronous, source plugins have the choise), otherwise effects should be synchronous.
 /// \sa
 /// - \ref iakeffect_geteffectinfo
 struct AkPluginInfo
@@ -116,14 +62,14 @@ struct AkPluginInfo
 		, uBuildVersion( 0 )
 		, bIsInPlace(true)
 		, bCanChangeRate(false)
-		, bIsAsynchronous(false)
+		, bReserved(false)
 	{}
 
 	AkPluginType eType;            ///< Plug-in type
 	AkUInt32	 uBuildVersion;	   ///< Plugin build version, must match the AK_WWISESDK_VERSION_COMBINED macro from AkWwiseSDKVersion.h.  Prevents usage of plugins compiled for other versions, avoiding crashes or data issues.
 	bool         bIsInPlace; 	   ///< Buffer usage (in-place or not)
 	bool         bCanChangeRate;   ///< True for effects whose sample throughput is different between input and output. Effects that can change rate need to be out-of-place (!bIsInPlace), and cannot exist on busses.
-	bool         bIsAsynchronous;  ///< Asynchronous plug-in flag
+	bool         bReserved;        ///< Legacy bIsAsynchronous plug-in flag, now unused. Preserved for plug-in backward compatibility. bReserved should be false for all plug-in.
 };
 
 //Forward declarations.
@@ -134,7 +80,6 @@ namespace AK
 extern "C" AK_DLLEXPORT AK::PluginRegistration * g_pAKPluginList;
 
 struct AkAcousticTexture;
-struct AkDiffuseReverberator;
 
 namespace AK
 {
@@ -158,13 +103,12 @@ namespace AK
 		/// The returned value is the product of these two numbers. Use the returned value as a higher
 		/// bound for the index of GetEmitterListenerPair().
 		/// Note that rays whose listener is irrelevant to the current context are ignored. For example,
-		/// if the calling plugin exists on a bus, only listeners that are routed to the end point's
+		/// if the calling plug-in exists on a bus, only listeners that are routed to the end point's
 		/// device are considered.
 		/// \sa
 		/// - AK::SoundEngine::SetPosition()
 		/// - AK::SoundEngine::SetMultiplePositions()
-		/// - AK::SoundEngine::SetListenerPosition()
-		/// - AK::SoundEngine::SetActiveListeners()
+		/// - AK::SoundEngine::SetListeners()
 		/// - AK::IAkGameObjectPluginInfo::GetEmitterListenerPair()
 		/// - AK::SoundEngine::AddSecondaryOutput()
 		virtual AkUInt32 GetNumEmitterListenerPairs() const = 0;
@@ -180,8 +124,7 @@ namespace AK
 		/// to any sound's positioning data.
 		/// \return AK_Fail if the index is invalid, AK_Success otherwise.
 		/// \sa
-		/// - AK::SoundEngine::SetAttenuationScalingFactor()
-		/// - AK::SoundEngine::SetListenerScalingFactor()
+		/// - AK::SoundEngine::SetScalingFactor()
 		/// - AK::IAkGameObjectPluginInfo::GetNumEmitterListenerPairs()
 		virtual AKRESULT GetEmitterListenerPair(
 			AkUInt32 in_uIndex,				///< Index of the pair, [0, GetNumEmitterListenerPairs()[
@@ -218,34 +161,34 @@ namespace AK
 
 		/// Get the distance scaling factor of the associated game object.
 		/// \sa
-		/// - AK::SoundEngine::SetAttenuationScalingFactor()
+		/// - AK::SoundEngine::SetScalingFactor()
 		virtual AkReal32 GetGameObjectScaling() const = 0;
 
-		/// Get the listeners that are listening ("active") to the game object.
-		/// Each set bit represents a listener.
+		/// Get the game object IDs of listener game objects that are listening to the emitter game object.
 		/// Note that only listeners relevant to the current context are considered. For example,
-		/// if the calling plugin exists on a bus, only listeners that are routed to the end point's
-		/// device are added to the returned mask.
-		/// \return The listener mask: 0x01 is listener 0, 0x02 is listener 1, 0x04 is listener 2, and so on.
+		/// if the calling plug-in exists on a bus, only listeners that are routed to the end point's
+		/// device are added to the returned array.
+		/// \return True if the call succeeded, false if all the listeners could not fit into the array,
 		/// \sa
-		/// - AK::SoundEngine::SetActiveListeners()
-		virtual AkUInt32 GetListenerMask() const = 0;
+		/// - AK::SoundEngine::SetListeners()
+		virtual bool GetListeners( 
+			AkGameObjectID* out_aListenerIDs,	///< Array of listener IDs to fill, or NULL to query the size needed.
+			AkUInt32& io_uSize					///< In: max size of the array, out: number of valid elements returned in out_aListenerIDs.
+			) const = 0;
 
-		/// Get information about a listener. Use GetListenerMask() prior to this function
-		/// in order to know which listeners are listening to the associated game object. You should
-		/// only get information about one listener at a time, so there should be only one bit set
-		/// in in_uListenerMask.
-		/// \return AK_Fail if the listener mask is invalid. AK_Success otherwise.
+		/// Get information about a listener. Use GetListeners() prior to this function
+		/// in order to know which listeners are listening to the associated game object. 
+		/// \return AK_Fail if the listener ID is invalid. AK_Success otherwise.
 		/// \sa
-		/// - AK::SoundEngine::SetActiveListeners()
-		/// - AK::IAkGameObjectPluginInfo::GetListenerMask()
+		/// - AK::SoundEngine::SetListeners()
+		/// - AK::IAkGameObjectPluginInfo::GetListeners()
 		virtual AKRESULT GetListenerData(
-			AkUInt32 in_uListenerMask,		///< Bit field identifying the listener for which you desire information.
-			AkListener & out_listener		///< Returned listener info.
+			AkGameObjectID in_uListener,		///< Bit field identifying the listener for which you desire information.
+			AkListener & out_listener			///< Returned listener info.
 			) const = 0;
 	};
 
-	/// Voice-specific information available to plugins. The associated game object's information is
+	/// Voice-specific information available to plug-ins. The associated game object's information is
 	/// available through the methods of the base class IAkGameObjectPluginInfo.
 	class IAkVoicePluginInfo : public IAkGameObjectPluginInfo
 	{
@@ -282,16 +225,18 @@ namespace AK
 		/// \sa IAkGlobalPluginContext
 		virtual IAkGlobalPluginContext* GlobalContext() const = 0;
 
-		/// Identify the mixing graph where the plug-in is instantiated by getting the end-point's
-		/// output ID and device type that were given to AddSecondaryOutput(). Primary output graph
-		/// returns out_uOutputID = 0 and out_uDeviceType = (AkUInt32)AkOutput_Main.
-		/// Applicable to plug-ins instantiated in the Master-Mixer hierarchy only (bus insert, mixer, sink).
+		/// Obtain the interface to access the game object on which the plugin is instantiated.
+		/// \return The interface to GameObject info.
+		virtual IAkGameObjectPluginInfo * GetGameObjectInfo() = 0;
+
+		/// Identify the output device into which the data processed by this plugin will end up.
+		/// Applicable to plug-ins instantiated as bus effects and to sink plugins.
 		/// Plug-ins instantiated in the Actor-Mixer hierarchy (i.e. on voices) return AK_NotCompatible.
 		/// \sa integrating_secondary_outputs
 		/// \return The device type and unique identifier. AK_Success if successful, AK_NotCompatible otherwise.
 		virtual AKRESULT GetOutputID(
 			AkUInt32 &			out_uOutputID,		///< Device identifier, when multiple devices of the same type are possible.
-			AkUInt32 &			out_uDeviceType		///< Device type, must be one of the currently supported devices types.  Can be casted to platforms-specific AkAudioOutputType.
+			AkPluginID &		out_uDevicePlugin	///< Device plugin ID.
 			) const = 0;
 
 		/// Return the pointer and size of the plug-in media corresponding to the specified index.
@@ -351,17 +296,17 @@ namespace AK
 			) = 0;
 
 		/// Get the cumulative gain of all mixing stages, from the host audio node down to the device end point.
-		/// When the node is an actor-mixer (voice), the downstream gain also comprises the voice volume, attenuation, and gain control
-		/// towards the main (dry) bus. Signal paths towards auxiliary busses are not taken into account.
+		/// Returns 1.f when the node is an actor-mixer (voice), because a voice may be routed to several mix chains.
 		/// \return The cumulative downstream gain.
 		virtual AkReal32 GetDownstreamGain() = 0;
 
 		/// Return the channel configuration of the parent node that this effect will mix into.  GetParentChannelConfig() may be used to set the output configuration of an
 		/// out-of-place effect to avoid additional up/down mixing stages.  Please note however that it is possible for out-of-place effects later in the chain to change
 		/// this configuration.
+		/// Returns !out_channelConfig.IsValid() when the node is an actor-mixer (voice), because a voice may be routed to several mix chains.
 		/// \return AK_Success if the channel config of the primary, direct parent bus could be determined, AK_Fail otherwise.
 		virtual AKRESULT GetParentChannelConfig(
-			AkChannelConfig& out_channelConfig	///< parent channel config
+			AkChannelConfig& out_channelConfig	///< Channel configuration of parent node (downstream bus).
 			) const = 0;
 
 #if (defined AK_CPU_X86 || defined AK_CPU_X86_64) && !(defined AK_IOS)
@@ -457,11 +402,12 @@ namespace AK
 		/// \sa AK::SoundEngine::GetIDFromString()
 		virtual AkUniqueID GetBusID() = 0;
 
+		/// DEPRECATED.  
 		/// Get the type of the bus on which the mixer plugin is instantiated.
-		/// AkBusType is a bit field, indicating whether the bus is the master (top-level) bus or not,
+		/// AkBusHierachyFlags is a bit field, indicating whether the bus is the master (top-level) bus or not,
 		/// and whether it is in the primary or secondary mixing graph.
 		/// \return The bus type.
-		virtual AkBusType GetBusType() = 0;
+		virtual AkUInt32 GetBusType() = 0;
 
 		/// Get speaker angles of the specified device.
 		/// The speaker angles are expressed as an array of loudspeaker pairs, in degrees, relative to azimuth ]0,180].
@@ -489,7 +435,7 @@ namespace AK
 		//@{
 
 		/// Compute a direct speaker assignment volume matrix with proper downmixing rules between two channel configurations.
-		virtual void ComputeSpeakerVolumesDirect(
+		virtual AKRESULT ComputeSpeakerVolumesDirect(
 			AkChannelConfig		in_inputConfig,				///< Channel configuration of the input.
 			AkChannelConfig		in_outputConfig,			///< Channel configuration of the mixer output.
 			AkReal32			in_fCenterPerc,				///< Center percentage. Only applies to mono inputs with standard output configurations that have a center channel.
@@ -497,7 +443,7 @@ namespace AK
 			) = 0;
 
 		/// Compute a volume matrix given the position of the panner (Wwise 2D panner).
-		virtual void ComputeSpeakerVolumesPanner(
+		virtual AKRESULT ComputeSpeakerVolumesPanner(
 			const AkVector &	in_position,				///< x,y,z panner position [-1,1]. Note that z has no effect at the moment.
 			AkReal32			in_fCenterPct,				///< Center percentage.
 			AkChannelConfig		in_inputConfig,				///< Channel configuration of the input.
@@ -542,6 +488,8 @@ namespace AK
 
 		/// Compute standard 3D positioning.
 		/// \return AK_Success if successful.
+		/// \aknote The cartesian counterpart of Compute3DPositioning, that uses emitter and listener transforms, should be used instead of this function.
+		/// It is more complete and more efficient. \endaknote
 		virtual AKRESULT Compute3DPositioning(
 			AkReal32			in_fAngle,					///< Incident angle, in radians [-pi,pi], where 0 is the azimuth (positive values are clockwise).
 			AkReal32			in_fElevation,				///< Incident elevation angle, in radians [-pi/2,pi/2], where 0 is the horizon (positive values are above the horizon).
@@ -550,7 +498,22 @@ namespace AK
 			AkChannelConfig		in_inputConfig,				///< Channel configuration of the input.
 			AkChannelMask		in_uInputChanSel,			///< Mask of input channels selected for panning (excluded input channels don't contribute to the output).
 			AkChannelConfig		in_outputConfig,			///< Desired output configuration.
-			AkReal32			in_fCenterPerc,				///< Center percentage. Only applies to mono inputs to outputs that have no center.
+			AkReal32			in_fCenterPerc,				///< Center percentage. Only applies to mono inputs to outputs that have a center.
+			AK::SpeakerVolumes::MatrixPtr out_mxVolumes		///< Returned volumes matrix. Must be preallocated using AK::SpeakerVolumes::Matrix::GetRequiredSize() (see AK::SpeakerVolumes::Matrix services).
+			) = 0;
+
+		/// Compute standard 3D positioning.
+		/// \return AK_Success if successful.
+		/// \aknote This function is more complete and more efficient than the Compute3DPositioning service that uses spherical coordinates, and should be favored.\endaknote
+		virtual AKRESULT Compute3DPositioning(
+			const AkTransform & in_emitter,					///< Emitter transform.
+			const AkTransform & in_listener,				///< Listener transform.
+			AkReal32			in_fCenterPerc,				///< Center percentage. Only applies to mono inputs to outputs that have a center.
+			AkReal32			in_fSpread,					///< Spread.
+			AkReal32			in_fFocus,					///< Focus.
+			AkChannelConfig		in_inputConfig,				///< Channel configuration of the input.
+			AkChannelMask		in_uInputChanSel,			///< Mask of input channels selected for panning (excluded input channels don't contribute to the output).
+			AkChannelConfig		in_outputConfig,			///< Desired output configuration.
 			AK::SpeakerVolumes::MatrixPtr out_mxVolumes		///< Returned volumes matrix. Must be preallocated using AK::SpeakerVolumes::Matrix::GetRequiredSize() (see AK::SpeakerVolumes::Matrix services).
 			) = 0;
 
@@ -728,41 +691,6 @@ namespace AK
 			IAkPluginParam *			in_pParams,					///< Interface to plug-in parameters
 			AkAudioFormat &				io_rFormat					///< Audio data format of the input/output signal. Only an out-of-place plugin is allowed to change the channel configuration.
 			) = 0;
-
-#if defined AK_WII_FAMILY_HW
-		/// Wii effects must provide the callback function that will be called on effect execution.
-		virtual AXAuxCallback GetFXCallback() = 0;
-
-		/// Wii effects must provide a pointer to the params that will be used by the effect callback.
-		virtual void* GetFXParams() = 0;
-
-		/// Wii effects must provide an estimated time after what the effect tail will be considered finished.
-		/// This information will be used by the sound engine to stop processing the environmentals effects
-		/// that are not in use so that the Aux_A, Aux_B and Aux_C can be attributed to other effects.
-		/// This function will be called only after the FX initialization was completed.
-		/// \return The estimated time in milliseconds.
-		virtual AkUInt32 GetTailTime() = 0;
-#endif
-#ifdef AK_3DS
-		/// 3DS effects can handle live parameter changes through this method, called at every audio frame.
-		virtual void Update() = 0;
-
-		/// 3DS effects must provide the callback function that will be called on effect execution.
-		virtual nn::snd::CTR::AuxCallback GetFXCallback() = 0;
-
-		/// 3DS effects must provide an estimated time after what the effect tail will be considered finished.
-		/// This information will be used by the sound engine to stop processing the environmentals effects
-		/// that are not in use so that the Aux_A and Aux_B can be attributed to other effects.
-		/// This function will be called only after the FX initialization was completed.
-		/// \return The estimated time in milliseconds.
-		virtual AkUInt32 GetTailTime() = 0;
-#endif
-#ifdef AK_VITA_HW
-		virtual const SceNgsVoiceDefinition * GetVoiceDefinition(){ AKASSERT( false && "Non hardware plugin called on Vita HW" ); return NULL; }
-		virtual AKRESULT AttachVoice( SceNgsHVoice in_hVoice){ AKASSERT( false && "Non hardware plugin called on Vita HW" ); return AK_Fail; }
-		virtual AkReal32 GetTailTime() const { AKASSERT( false && "Non hardware plugin called on Vita HW" ); return 0; }
-		virtual AKRESULT SetBypass( SceUInt32 in_uBypassFlag ) { AKASSERT( false && "Non hardware plugin called on Vita HW" ); return AK_Fail; }
-#endif
 	};
 
 	/// Software effect plug-in interface for in-place processing (see \ref soundengine_plugins_effects).
@@ -778,9 +706,6 @@ namespace AK
 		/// See \ref iakmonadiceffect_execute_general.
 		virtual void Execute(
 				AkAudioBuffer *							io_pBuffer		///< In/Out audio buffer data structure (in-place processing)
-#ifdef AK_PS3
-				, AK::MultiCoreServices::DspProcess*&	out_pDspProcess	///< Asynchronous DSP process utilities on PS3
-#endif
 				) = 0;
 
 		/// Skips execution of some frames, when the voice is virtual playing from elapsed time.
@@ -806,9 +731,6 @@ namespace AK
 				AkAudioBuffer *							in_pBuffer,		///< Input audio buffer data structure
 				AkUInt32								in_uInOffset,	///< Offset position into input buffer data
 				AkAudioBuffer *							out_pBuffer		///< Output audio buffer data structure
-#ifdef AK_PS3
-				, AK::MultiCoreServices::DspProcess*&	out_pDspProcess	///< Asynchronous DSP process utilities on PS3
-#endif
 				) = 0;
 
 		/// Skips execution of some frames, when the voice is virtual playing from elapsed time.
@@ -867,74 +789,88 @@ namespace AK
 		/// \warning The methods of this group are deprecated.
 		//@{
 
-		/// Query whether the object corresponding to this input is spatialized or is instead assigned
-		/// directly to output channels. When the object's panner type is "2D", IsSpatializationEnabled returns true if the panner is enabled.
-		/// When the object's panner type is "3D", IsSpatializationEnabled returns true if option "Enable Spatialization" is ticked.
-		/// \return True if spatialization is enabled, false otherwise.
-		/// \sa GetPannerType()
-		virtual bool IsSpatializationEnabled() = 0;
-
 		/// Retrieve center percentage of this input.
-		/// Note that the returned value is always 1 unless positioning is enabled.
 		/// \return Center percentage, between 0 and 1.
-		/// \sa
-		/// - IsSpatializationEnabled()
 		virtual AkReal32 GetCenterPerc() = 0;
 
-		/// Retrieve the panner type of this input ("2D" versus "3D").
-		/// Note that the returned value is only relevant if positioning is enabled.
+		/// Retrieve the speaker panning type: type of panning logic when object is not 3D spatialized.
+		/// Note that the returned value is only relevant when the object is not 3D spatialized,
+		/// that is Get3DSpatializationMode returns AK_SpatializationMode_None.
 		/// \sa
-		/// - IsSpatializationEnabled()
-		virtual AkPannerType GetPannerType() = 0;
+		/// - Get3DSpatializationMode()
+		virtual AkSpeakerPanningType GetSpeakerPanningType() = 0;
 
-		/// Get whether positioning is driven by the game (when positioning type is 3D game defined) or by the
-		/// user through the use of an automatable panner (such as 2D or 3D user defined).
+		/// Speaker panning:
+		/// Retrieve the panner position (each vector component is between -1 and 1) of this input.
+		/// Note that the returned value is only relevant when the object is not 3D spatialized,
+		/// (Get3DSpatializationMode returns AK_SpatializationMode_None), and if speaker panning is not direct assignment
+		/// (GetSpeakerPanningType does not return AK_DirectSpeakerAssignment).
 		/// \sa
-		/// - GetPannerType()
-		virtual AkPositionSourceType GetPositionSourceType() = 0;
-
-		/// Default 2D positioning:
-		/// Retrieve the 2D panner position (each vector component is between -1 and 1) of this input.
-		/// Note that the returned value is only relevant if positioning is enabled, and panner type is "2D".
-		/// \sa
-		/// - IsSpatializationEnabled()
-		/// - GetPannerType()
+		/// - GetSpeakerPanningType()
+		/// - Get3DSpatializationMode()
 		virtual void GetPannerPosition(
 			AkVector & out_position			///< Returned sound position.
 			) = 0;
 
-		/// Default 3D positioning:
+		/// Get the value of this input's Listener Relative Routing option, that is, if the emitter-listener relative 
+		/// association is calculated at this node. Listener Relative Routing needs to be calculated in order for a node
+		/// to be spatialized or attenuated with respect to in-game emitter and listener positions. Otherwise it can only
+		/// be panned.
+		/// \sa
+		/// - Get3DSpatializationMode()
+		/// - Get3DPositionType()
+		/// - GetNum3DPositions()
+		virtual bool HasListenerRelativeRouting() = 0;
+
+		/// Get whether the emitter position is defined by the game alone (AK_3DPositionType_Emitter), or if it is further automated 
+		/// (AK_3DPositionType_EmitterWithAutomation, AK_3DPositionType_ListenerWithAutomation).
+		/// The resulting 3D position(s) may be obtained by Get3DPosition(), and used for 3D spatialization or attenuation.
+		/// \sa
+		/// - Get3DPosition()
+		/// - GetNum3DPositions()
+		/// - HasListenerRelativeRouting()
+		virtual Ak3DPositionType Get3DPositionType() = 0;
+
+		/// 3D spatialization:
 		/// Retrieve the number of emitter-listener pairs (rays) of this input.
-		/// Note that the returned value is always 0 unless the input is in 3D panner mode.
+		/// Note that the returned value is always 0 unless the input has listener relative routing (see HasListenerRelativeRouting()).
+		/// Use this function with Get3DPosition().
+		/// \sa
+		/// - Get3DPosition()
+		/// - HasListenerRelativeRouting()
 		virtual AkUInt32 GetNum3DPositions() = 0;
 
-		/// Default 3D positioning:
+		/// 3D spatialization:
 		/// Retrieve the spherical coordinates of the desired emitter-listener pair (ray) corresponding to this
-		/// input, as automated by the engine. When in 3D game-defined positioning mode, the returned position
-		/// corresponds to the game object position (also obtainable via the AK::IAkGameObjectPluginInfo interface).
-		/// In 3D user-defined positioning mode, returned rays are those that result from engine automation.
+		/// input, as automated by the engine. Applicable only when the input has listener relative routing (see HasListenerRelativeRouting()).
+		/// Returned rays are those that result from engine automation, if applicable.
 		/// \return AK_Success if the pair index is valid, AK_Fail otherwise.
 		/// \sa
+		/// - HasListenerRelativeRouting()
 		/// - GetNum3DPositions()
 		virtual AKRESULT Get3DPosition(
 			AkUInt32 in_uIndex,							///< Index of the pair, [0, GetNum3DPositions()[
 			AkEmitterListenerPair & out_soundPosition	///< Returned sound position, in spherical coordinates.
 			) = 0;
 
-		/// Default 3D positioning:
+		/// 3D spatialization:
 		/// Evaluate spread value at the distance of the desired emitter-listener pair for this input.
+		/// Applicable only when the input has listener relative routing (see HasListenerRelativeRouting()).
 		/// \return The spread value, between 0 and 100. 0 if the pair index is invalid.
 		/// \sa
+		/// - HasListenerRelativeRouting()
 		/// - GetNum3DPositions()
 		/// - Get3DPosition()
 		virtual AkReal32 GetSpread(
 			AkUInt32 in_uIndex				///< Index of the pair, [0, GetNum3DPositions()[
 			) = 0;
 
-		/// Default 3D positioning:
+		/// 3D spatialization:
 		/// Evaluate focus value at the distance of the desired emitter-listener pair for this input.
+		/// Applicable only when the input has listener relative routing (see HasListenerRelativeRouting()).
 		/// \return The focus value, between 0 and 100. 0 if the pair index is invalid.
 		/// \sa
+		/// - HasListenerRelativeRouting()
 		/// - GetNum3DPositions()
 		/// - Get3DPosition()
 		virtual AkReal32 GetFocus(
@@ -942,6 +878,7 @@ namespace AK
 			) = 0;
 
 		/// Get the max distance as defined in the attenuation editor.
+		/// Applicable only when the input has listener relative routing (see HasListenerRelativeRouting()).
 		/// \return True if this input has attenuation, false otherwise.
 		virtual bool GetMaxAttenuationDistance(
 			AkReal32 & out_fMaxAttenuationDistance	///< Returned max distance.
@@ -952,6 +889,13 @@ namespace AK
 			AK::SpeakerVolumes::MatrixPtr out_mxPrevVolumes,	///< Returned in/out channel volume distribution corresponding to the beginning of the buffer. Must be preallocated (see AK::SpeakerVolumes::Matrix services).
 			AK::SpeakerVolumes::MatrixPtr out_mxNextVolumes		///< Returned in/out channel volume distribution corresponding to the end of the buffer. Must be preallocated (see AK::SpeakerVolumes::Matrix services).
 			) = 0;
+
+		/// Query the 3D spatialization mode used by this input.
+		/// Applicable only when the input has listener relative routing (see HasListenerRelativeRouting()).
+		/// \return The 3D spatialization mode (see Ak3DSpatializationMode). AK_SpatializationMode_None if not set, or if the input is not a node where the game object is evaluated against its listener.
+		/// \sa
+		/// - HasListenerRelativeRouting()
+		virtual Ak3DSpatializationMode Get3DSpatializationMode() = 0;
 
 		//@}
 	};
@@ -1015,6 +959,10 @@ namespace AK
 		///	Note that the channel configuration is suggestive and may even be specified as !AkChannelConfig::IsValid().The plugin is free to determine the true channel configuration(this is an io parameter).
 		///
 		/// \return AK_Success if successful.
+		/// \return AK_NotCompatible if the system doesn't support this sink type.  Return this if you want to fall back to the default sinks.  This sink will never be requested again.  Do not return this code if the device is simply unplugged.
+		/// \return AK_DeviceNotCompatible if the requested output device doesn't support this sink type. Return this if you want to fall back to the dummy audio sink wich will result in no audio for the associated bus hierachy.  This sink will never be requested again.
+		/// All other return codes will be treated as temporary failures conditions and the sink will be requested again later.
+
 		virtual AKRESULT Init(
 			IAkPluginMemAlloc *		in_pAllocator,			///< Interface to memory allocator to be used by the effect.
 			IAkSinkPluginContext *	in_pSinkPluginContext,	///< Interface to sink plug-in's context.
@@ -1046,17 +994,17 @@ namespace AK
 			AkRamp					in_gain					///< Volume gain to apply to this input (prev corresponds to the beginning, next corresponds to the end of the buffer).
 			) = 0;
 
-		/// Called at the end of the audio frame. Plugins do whatever bookkeeping needed.
+		/// Called at the end of the audio frame. If no Consume calls were made prior to OnFrameEnd, this means no audio was sent to the device.  Assume silence.  
 		/// \sa
 		/// - AK::IAkSinkPlugin::Consume()
 		virtual void OnFrameEnd() = 0;
 
-		/// Ask the plugin whether starvation occurred.
+		/// Ask the plug-in whether starvation occurred.
 		/// \return True if starvation occurred, false otherwise.
 		virtual bool IsStarved() = 0;
 
 		/// Reset the "starvation" flag after IsStarved() returned true.
-		virtual void ResetStarved() = 0;
+		virtual void ResetStarved() = 0;		
 	};
 
 	/// Wwise sound engine source plug-in interface (see \ref soundengine_plugins_source).
@@ -1128,7 +1076,7 @@ namespace AK
 		/// Given the number of frames requested adjust the number of frames that would have been produced by a call to Execute() in the io_uFrames parameter and return and
 		/// return AK_DataReady or AK_NoMoreData, depending if there would be audio output or not at that point.
 		/// Returning AK_NotImplemented will trigger a normal execution of the voice (as if it was not virtual) thus not enabling the CPU savings of a proper from elapsed time behavior.
-		/// Note that returning AK_NotImplemeted for a source plug-ins that support asynchronous processing (PS3 platform only) will produce a 'resume' virtual voice behavior instead.
+		/// Note that returning AK_NotImplemeted for a source plug-ins that support asynchronous processing will produce a 'resume' virtual voice behavior instead.
 		virtual AKRESULT TimeSkip(
 			AkUInt32 & /*io_uFrames	*/ ///< (Input) Number of frames that the audio buffer processing can advance (equivalent to MaxFrames()). The output value should be the number of frames that would be produced this execution.
 			) { return AK_NotImplemented; }
@@ -1140,42 +1088,16 @@ namespace AK
 		/// \aknote The effect will stop being called by the pipeline when AK_NoMoreData is returned in the the eState field of the AkAudioBuffer structure.
 		virtual void Execute(
 				AkAudioBuffer *							io_pBuffer		///< In/Out audio buffer data structure (in-place processing)
-#ifdef AK_PS3
-				, AK::MultiCoreServices::DspProcess*&	out_pDspProcess	///< Asynchronous DSP process utilities on PS3
-#endif
 				) = 0;
 	};
 
-#if defined AK_WII
-	/// This function can be useful to convert from normalized floating point audio samples to Wii-pipeline format samples.
-	static AkForceInline AkInt16 AK_FLOAT_TO_SAMPLETYPE(AkReal32 in_fIn)
-	{
-		AkInt32 i32 = (AkInt32)(in_fIn * 0x7FFF);
-		i32 -= ((i32<=32767)-1)&(i32-32767);
-		i32 -= ((i32>=-32768)-1)&(i32+32768);
-		AkInt16 i16 = (AkInt16)i32;
-		return i16;
-	}
 
-	/// This function can be useful to convert from normalized floating point audio samples to Wii-pipeline format samples when the input is not not to exceed (-1,1) range.
-	static AkForceInline AkInt16 AK_FLOAT_TO_SAMPLETYPE_NOCLIP(AkReal32 in_fIn)
-	{
-		return (AkInt16)(in_fIn * 0x7FFF);
-	}
-
-	/// This function can be useful to convert from Wii-pipeline format samples to normalized floating point audio samples.
-	static AkForceInline AkReal32 AK_SAMPLETYPE_TO_FLOAT(AkInt16 in_iIn)
-	{
-		return (((AkReal32)in_iIn) * (1.f/0x7FFF));
-	}
-#else
-	/// This function can be useful to convert from normalized floating point audio samples to Wii-pipeline format samples.
+	/// This function can be useful to convert from normalized floating point audio samples to HW-pipeline format samples.
 	#define AK_FLOAT_TO_SAMPLETYPE( __in__ ) (__in__)
-	/// This function can be useful to convert from normalized floating point audio samples to Wii-pipeline format samples when the input is not not to exceed (-1,1) range.
+	/// This function can be useful to convert from normalized floating point audio samples to HW-pipeline format samples when the input is not not to exceed (-1,1) range.
 	#define AK_FLOAT_TO_SAMPLETYPE_NOCLIP( __in__ ) (__in__)
-	/// This function can be useful to convert from Wii-pipeline format samples to normalized floating point audio samples.
+	/// This function can be useful to convert from HW-pipeline format samples to normalized floating point audio samples.
 	#define AK_SAMPLETYPE_TO_FLOAT( __in__ ) (__in__)
-#endif
 
 	#define AK_DBTOLIN( __db__ ) (powf(10.f,(__db__) * 0.05f))
 }
@@ -1184,6 +1106,9 @@ namespace AK
 AK_CALLBACK( AK::IAkPlugin*, AkCreatePluginCallback )( AK::IAkPluginMemAlloc * in_pAllocator );
 /// Registered plugin parameter node creation function prototype.
 AK_CALLBACK( AK::IAkPluginParam*, AkCreateParamCallback )( AK::IAkPluginMemAlloc * in_pAllocator );
+
+struct AkPlatformInitSettings;
+struct AkInitSettings;
 
 namespace AK
 {
@@ -1269,8 +1194,11 @@ namespace AK
 		/// location specified by in_eLocation. This function will also be called from the thread calling
 		/// AK::SoundEngine::Term with in_eLocation set to AkGlobalCallbackLocation_Term.
 		/// For example, in order to be called at every audio rendering pass, and once during teardown for releasing resources, you would call
-		/// RegisterGlobalCallback(myCallback, AkGlobalCallbackLocation_BeginRender | AkGlobalCallbackLocation_Term, myCookie);
+		/// RegisterGlobalCallback(AkPluginTypeEffect, MY_COMPANY_ID , MY_PLUGIN_ID, myCallback, AkGlobalCallbackLocation_BeginRender | AkGlobalCallbackLocation_Term, myCookie);
 		/// \remarks
+		/// A valid (not AkPluginTypeNone) Plugin Type, Company ID and valid (non-zero) Plug-in ID of the plug-in registering the callback must be provided to this function.
+		/// The timing of the callback function will contribute to the timing of the plug-in registered (Total Plug-in CPU and Advanced Profiler Plug-in tab).
+		/// Timers will be registered to callbacks at all locations except for AkGlobalCallbackLocation_Register and AkGlobalCallbackLocation_Term.
 		/// It is illegal to call this function while already inside of a global callback.
 		/// This function might stall for several milliseconds before returning.
 		/// \sa
@@ -1278,6 +1206,9 @@ namespace AK
 		/// - AkGlobalCallbackFunc
 		/// - AkGlobalCallbackLocation
 		virtual AKRESULT RegisterGlobalCallback(
+			AkPluginType in_eType,							///< A valid Plug-in type (for example, source or effect).
+			AkUInt32 in_ulCompanyID,						///< Company identifier (as declared in the plug-in description XML file). 
+			AkUInt32 in_ulPluginID,							///< Plug-in identifier (as declared in the plug-in description XML file).
 			AkGlobalCallbackFunc in_pCallback,				///< Function to register as a global callback.
 			AkUInt32 in_eLocation = AkGlobalCallbackLocation_BeginRender, ///< Callback location defined in AkGlobalCallbackLocation. Bitwise OR multiple locations if needed.
 			void * in_pCookie = NULL						///< User cookie.
@@ -1310,15 +1241,20 @@ namespace AK
 			bool in_bBypassInternalValueInterpolation = false		///< True if you want to bypass the internal "slew rate" or "over time filtering" specified by the sound designer. This is meant to be used when for example loading a level and you dont want the values to interpolate.
 			) = 0;
 
-		/// Send custom game data to a plugin.
+		/// Send custom game data to a plugin that resides on a bus (insert effect or mixer plugin).
 		/// Data will be copied and stored into a separate list.
 		/// Previous entry is deleted when a new one is sent.
 		/// Set the data pointer to NULL to clear item from the list.
+		/// This means that you cannot send different data to various instances of the plugin on a same bus.\endaknote
+		/// \return AK_Success if data was sent successfully.
 		virtual AKRESULT SendPluginCustomGameData(
-			AkUniqueID in_busID,		///< Bus ID
-			AkUInt32 in_uFXIndex,		///< FX index, use AK_MIXER_FX_SLOT for mixer plugin
-			const void* in_pData,		///< The data blob
-			AkUInt32 in_uSizeInBytes	///< Size of data
+			AkUniqueID in_busID,			///< Bus ID
+			AkGameObjectID in_busObjectID,	///< Bus Object ID
+			AkPluginType in_eType,			///< Plug-in type (for example, source or effect)
+			AkUInt32 in_uCompanyID,		///< Company identifier (as declared in the plug-in description XML file)
+			AkUInt32 in_uPluginID,			///< Plug-in identifier (as declared in the plug-in description XML file)
+			const void* in_pData,			///< The data blob
+			AkUInt32 in_uSizeInBytes		///< Size of data
 			) = 0;
 
 		/// N to N channels mix
@@ -1378,10 +1314,97 @@ namespace AK
 			AkAcousticTextureID in_AcousticTextureID		///< Acoustic Texture's ID
 			) = 0;
 
-		/// Return a diffuse reverberator.
-		/// \return The pointer to an diffuse reverberator if successful, NULL otherwise.
-		virtual const AkDiffuseReverberator* GetDiffuseReverberator(
-			AkDiffuseReverberatorID in_DiffuseReverberatorID		///< Diffuse Reverberator's ID
+		/// Given an emitter-listener pair, compute the azimuth and elevation angles of the emitter relative to the listener.
+		/// \return AK_Success if the listener referenced in the emitter-listener pair was found; azimuth and elevation.
+		virtual AKRESULT ComputeSphericalCoordinates(
+			const AkEmitterListenerPair & in_pair,			///< Emitter-listener pair for which to compute azimuth and elevation angles.
+			AkReal32 & out_fAzimuth,						///< Returned azimuthal angle, in radians.
+			AkReal32 & out_fElevation						///< Returned elevation angle, in radians.
+			) const = 0;
+
+		/// Get the platform init settings that the wwise sound engine has been initialized with.
+		/// This function returns a null pointer if called with an instance of RenderFXGlobalContext.
+		virtual const AkPlatformInitSettings* GetPlatformInitSettings() const = 0;
+		
+		/// Get the init settings that the wwise sound engine has been initialized with
+		/// This function returns a null pointer if called with an instance of RenderFXGlobalContext.
+		virtual const AkInitSettings* GetInitSettings() const = 0;
+
+		/// Gets the configured audio settings.
+		/// Call this function to get the configured audio settings.
+		/// 
+		/// \warning This function is not thread-safe.
+		/// \warning Call this function only after the sound engine has been properly initialized.
+		virtual AKRESULT GetAudioSettings(
+			AkAudioSettings &	out_audioSettings  	///< Returned audio settings
+			) const = 0;
+
+		/// Universal converter from string to ID for the sound engine.
+		/// Calls AK::SoundEngine::GetIDFromString.
+		/// \sa
+		/// - <tt>AK::SoundEngine::GetIDFromString</tt>
+		virtual AkUInt32 GetIDFromString(const char* in_pszString) const = 0;
+
+		/// Synchronously posts an Event to the sound engine (by event ID).
+		/// The callback function can be used to be noticed when markers are reached or when the event is finished.
+		/// An array of wave file sources can be provided to resolve External Sources triggered by the event. 
+		/// \return The playing ID of the event launched, or AK_INVALID_PLAYING_ID if posting the event failed
+		/// \remarks
+		/// This function executes the actions contained in the event without going through the message queue.
+		/// In order to do so it acquires the global Wwise sound engine lock. It should therefore only be called from one of the 
+		/// global engine hooks (see AK::IAkGlobalPluginContext::RegisterGlobalCallback).
+		/// Use AK::IAkGlobalPluginContext::GetIDFromString() if you use event names (strings).
+		/// \sa 
+		/// - <tt>AK::SoundEngine::PostEvent</tt>
+		/// - <tt>AK::IAkGlobalPluginContext::RegisterGlobalCallback</tt>
+		/// - <tt>AK::IAkGlobalPluginContext::GetIDFromString</tt>
+		virtual AkPlayingID PostEventSync(
+			AkUniqueID in_eventID,							///< Unique ID of the event
+			AkGameObjectID in_gameObjectID,					///< Associated game object ID
+			AkUInt32 in_uFlags = 0,							///< Bitmask: see \ref AkCallbackType
+			AkCallbackFunc in_pfnCallback = NULL,			///< Callback function
+			void * in_pCookie = NULL,						///< Callback cookie that will be sent to the callback function along with additional information
+			AkUInt32 in_cExternals = 0,						///< Optional count of external source structures
+			AkExternalSourceInfo *in_pExternalSources = NULL,///< Optional array of external source resolution information
+			AkPlayingID	in_PlayingID = AK_INVALID_PLAYING_ID///< Optional (advanced users only) Specify the playing ID to target with the event. Will Cause active actions in this event to target an existing Playing ID. Let it be AK_INVALID_PLAYING_ID or do not specify any for normal playback.
+			) = 0;
+		
+		/// Executes a number of MIDI Events on all nodes that are referenced in the specified Event in an Action of type Play.
+		/// Each MIDI event will be posted in AkMIDIPost::uOffset samples from the start of the current frame. The duration of
+		/// a sample can be determined from the sound engine's audio settings, via a call to AK::IAkGlobalPluginContext::GetAudioSettings.
+		/// \remarks
+		/// This function executes the MIDI Events without going through the message queue.
+		/// In order to do so it acquires the global Wwise sound engine lock. It should therefore only be called from one of the 
+		/// global engine hooks (see AK::IAkGlobalPluginContext::RegisterGlobalCallback).
+		/// Use AK::IAkGlobalPluginContext::GetIDFromString() if you use event names (strings).
+		/// \sa 
+		/// - <tt>AK::SoundEngine::PostMIDIOnEvent</tt>
+		/// - <tt>AK::IAkGlobalPluginContext::GetAudioSettings</tt>
+		/// - <tt>AK::IAkGlobalPluginContext::StopMIDIOnEventSync</tt>
+		/// - <tt>AK::IAkGlobalPluginContext::RegisterGlobalCallback</tt>
+		/// - <tt>AK::IAkGlobalPluginContext::GetIDFromString</tt>
+		virtual AKRESULT PostMIDIOnEventSync(
+			AkUniqueID in_eventID,											///< Unique ID of the Event
+			AkGameObjectID in_gameObjectID,									///< Associated game object ID
+			AkMIDIPost* in_pPosts,											///< MIDI Events to post
+			AkUInt16 in_uNumPosts											///< Number of MIDI Events to post
+			) = 0;
+
+		/// Stops MIDI notes on all nodes that are referenced in the specified event in an action of type play,
+		/// with the specified Game Object. Invalid parameters are interpreted as wildcards. For example, calling
+		/// this function with in_eventID set to AK_INVALID_UNIQUE_ID will stop all MIDI notes for Game Object
+		/// in_gameObjectID.
+		/// \remarks
+		/// This function stops the MIDI notes without going through the message queue.
+		/// In order to do so it acquires the global Wwise sound engine lock. It should therefore only be called from one of the 
+		/// global engine hooks (see AK::IAkGlobalPluginContext::RegisterGlobalCallback).
+		/// Use AK::IAkGlobalPluginContext::GetIDFromString() if you use event names (strings).
+		/// \sa
+		/// - <tt>AK::IAkGlobalPluginContext::PostMIDIOnEvent</tt>
+		/// - <tt>AK::IAkGlobalPluginContext::GetIDFromString</tt>
+		virtual AKRESULT StopMIDIOnEventSync(
+			AkUniqueID in_eventID = AK_INVALID_UNIQUE_ID,					///< Unique ID of the Event
+			AkGameObjectID in_gameObjectID = AK_INVALID_GAME_OBJECT			///< Associated game object ID
 			) = 0;
 	};
 
@@ -1455,5 +1478,8 @@ namespace AK
 	void *_pluginName_##_linkonceonly = (void*)&_pluginName_##Registration;
 
 #define DEFINE_PLUGIN_REGISTER_HOOK AK_DLLEXPORT AK::PluginRegistration * g_pAKPluginList = NULL;
+
+#define AK_GET_SINK_TYPE_FROM_DEVICE_KEY(_key) ((AkUInt32)(_key & 0xffffffff))
+#define AK_GET_DEVICE_ID_FROM_DEVICE_KEY(_key) ((AkUInt32)(_key >> 32))
 
 #endif // _IAK_PLUGIN_H_

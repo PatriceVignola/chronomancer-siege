@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 #pragma once
@@ -61,11 +61,6 @@ namespace AK
     extern AkReal32 g_fFreqRatio;
 }
 
-#ifdef AK_NACL
-#define sched_get_priority_max( _a ) 0
-#define sched_get_priority_min( _a ) 0
-#endif
-
 //-----------------------------------------------------------------------------
 // Defines for POSIX (Mac, iOS, Android)
 //-----------------------------------------------------------------------------
@@ -76,7 +71,7 @@ namespace AK
 #define AK_RETURN_THREAD_OK                     0x00000000
 #define AK_RETURN_THREAD_ERROR                  0x00000001
 
-#define AK_DEFAULT_STACK_SIZE                   (65536)
+#define AK_DEFAULT_STACK_SIZE                   (64*1024)
 
 
 #define AK_THREAD_DEFAULT_SCHED_POLICY			SCHED_FIFO
@@ -201,7 +196,6 @@ namespace AKPLATFORM
 		
 		AKVERIFY(!pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE));
 		
-#ifndef AK_NACL		
 		// Try to set the thread policy
 		int sched_policy = in_threadProperties.uSchedPolicy;
 		if( pthread_attr_setschedpolicy( &attr, sched_policy )  )
@@ -225,7 +219,6 @@ namespace AKPLATFORM
 			schedParam.sched_priority = in_threadProperties.nPriority;
 			AKVERIFY( !pthread_attr_setschedparam( &attr, &schedParam ));
 		}
-#endif
 #ifdef AK_APPLE
 		int inherit;
 		pthread_attr_getinheritsched(&attr, &inherit );

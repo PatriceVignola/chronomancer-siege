@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 /// \file
@@ -96,29 +96,29 @@ namespace AK
 		/// License type.
 		enum LicenseType
 		{
-			LicenseType_Trial = 1,
-			LicenseType_Purchased,
-			LicenseType_Academic
+			LicenseType_Trial = 1,		///< Used for both Trial and Evaluation License handling
+			LicenseType_Purchased,		///< The license was purchased
+			LicenseType_Academic		///< The license is for academic
 		};
 
 		/// License status.
 		enum LicenseStatus
 		{
-			LicenseStatus_Unlicensed,
-			LicenseStatus_Expired,
-			LicenseStatus_Valid,
+			LicenseStatus_Unlicensed,	///< No license found
+			LicenseStatus_Expired,		///< A license is found, but is expired
+			LicenseStatus_Valid,		///< A license is found and is valid
 
-			LicenseStatus_Incompatible		//the plugin is for an older version of wwise
+			LicenseStatus_Incompatible	///< The plugin was made for an older version of Wwise
 		};
 
 		/// Log message severity.
 		enum Severity
 		{
-			Severity_Success = -1,	/// operation was executed without errors or will not produce errors
-			Severity_Message,		/// not impacting the integrity of the current operation
-			Severity_Warning,		/// potentially impacting the integrity of the current operation
-			Severity_Error,			/// impacting the integrity of the current operation
-			Severity_FatalError,	/// impacting the completion of the current operation
+			Severity_Success = -1,	///< operation was executed without errors or will not produce errors
+			Severity_Message,		///< not impacting the integrity of the current operation
+			Severity_Warning,		///< potentially impacting the integrity of the current operation
+			Severity_Error,			///< impacting the integrity of the current operation
+			Severity_FatalError,	///< impacting the completion of the current operation
 					
 		};
 

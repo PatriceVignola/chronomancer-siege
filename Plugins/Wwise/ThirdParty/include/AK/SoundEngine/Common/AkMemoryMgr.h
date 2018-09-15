@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 /// \file 
@@ -45,7 +45,11 @@ the specific language governing permissions and limitations under the License.
 		AK::MemoryMgr::SetPoolName( _poolid, _name );	\
 	}
 
-//#define AK_MEMDEBUG
+// #define AK_MEMDEBUG
+
+#ifdef MSTC_SYSTEMATIC_MEMORY_STRESS
+#define AK_MEMDEBUG
+#endif
 
 #else
 #define AK_SETPOOLNAME(_poolid,_name)
@@ -90,6 +94,16 @@ namespace AK
 			AkUInt32 uUsed;			///< Used memory (in bytes)
 		};
 
+
+		/// Memory management debug tools.  When specified in Init, each memory allocation will have a extra tag that can be verified periodically.
+		/// Enabling this will use a lot of CPU and additional memory.  This should not be enabled unless required by Audiokinetic's support.  These are enabled in Debug configuration only.
+		enum DebugFlags
+		{
+			CheckOverwriteAtFree = 1,	///< Performs a for buffer overflow when an allocation is freed.
+			CheckOverwritePerFrame = 2,	///< Performs a check for buffer overflow once per audio frame
+			CheckOverwritePerVoice = 4, ///< Performs a check for buffer overflow once per audio voice			
+		};
+
 		/// Query whether the Memory Manager has been sucessfully initialized.
 		/// \warning This function is not thread-safe. It should not be called at the same time as MemoryMgr::Init or MemoryMgr::Term.
 		/// \return True if the Memory Manager is initialized, False otherwise
@@ -120,7 +134,9 @@ namespace AK
 			AkUInt32		in_uMemSize,		///< Size of the pool (in bytes)
 			AkUInt32		in_uBlockSize,		///< Size of a block (in bytes)
 			AkUInt32		in_eAttributes,		///< Memory pool attributes: use values of \ref AkMemPoolAttributes
-			AkUInt32        in_uBlockAlign = 0	///< Alignment of memory blocks
+			AkUInt32        in_uBlockAlign = 0	///< Alignment of memory blocks. 
+												///< Some plug-ins and specific processors may require specific data alignment.
+												///< When allocating space for sound bank data, we recommend using AK_BANK_PLATFORM_DATA_ALIGNMENT.
 			);
 
 #ifdef AK_SUPPORT_WCHAR
@@ -236,7 +252,7 @@ namespace AK
 		    size_t		in_uSize,				///< Number of bytes to allocate
 		    const char *in_pszFile,				///< Debug file name
 		    AkUInt32	in_uLine				///< Debug line number
-			);
+			);		
 #endif
 		/// Allocate memory from a pool.
 		/// \return A pointer to the start of the allocated memory (NULL if the system is out of memory)
@@ -246,6 +262,16 @@ namespace AK
 			AkMemPoolId in_poolId,				///< ID of the memory pool
 		    size_t		in_uSize 				///< Number of bytes to allocate
 		    );
+
+		/// Reallocate memory from a pool.
+		/// \return A pointer to the start of the allocated memory (NULL if the system is out of memory)
+		/// \sa
+		/// - \ref memorymanager
+		AK_EXTERNAPIFUNC(void *, Realloc)(
+			AkMemPoolId in_poolId,				///< ID of the memory pool
+			void *in_pAlloc,					///< Pointer to the start of the allocated memory
+			size_t		in_uSize 				///< Number of bytes to allocate
+			);
 
 		/// Free memory from a pool.
 		/// \return AK_Success if successful
@@ -346,6 +372,20 @@ namespace AK
 			AkMemPoolId in_PoolId	///< Pool to profile
 			);
 
+
+		/// Debugging method that verifies if buffer overflow occurred in a specific pool.
+		/// Called at various moments depending on the DebugFlags set in AkMemSettings.
+		/// In the default implementation it is not called in Release otherwise will assert if overrun found.
+		/// Implementation is not mendatory if the MemoryMgr is overriden.
+		AK_EXTERNAPIFUNC(void, CheckForOverwrite) (
+			AkUInt32 in_uPoolID
+			);		
+
+#if defined (AK_MEMDEBUG)
+		/// Debugging method that dumps a snapshot list of actual memory allocations to a file.
+		/// The list contains the size allocated and the source file and line number where the memory allocation was done.
+		AK_EXTERNAPIFUNC(void, DumpToFile) (const char* strFileName = "AkMemDump.txt");
+#endif
 		//@}
     }
 }

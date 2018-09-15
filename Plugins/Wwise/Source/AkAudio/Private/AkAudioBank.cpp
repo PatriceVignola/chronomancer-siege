@@ -4,8 +4,8 @@
 	AkBank.cpp:
 =============================================================================*/
 
-#include "AkAudioDevice.h"
 #include "AkAudioBank.h"
+#include "AkAudioDevice.h"
 
 /**
  * Constructor
@@ -24,7 +24,7 @@ UAkAudioBank::UAkAudioBank(const class FObjectInitializer& ObjectInitializer)
 void UAkAudioBank::PostLoad()
 {
 	Super::PostLoad();
-	if ( AutoLoad )
+	if ( AutoLoad && !HasAnyFlags(RF_ClassDefaultObject))
 	{
 		Load();
 	}
@@ -35,7 +35,7 @@ void UAkAudioBank::PostLoad()
  */
 void UAkAudioBank::BeginDestroy()
 {
-	if( AutoLoad )
+	if( AutoLoad && !HasAnyFlags(RF_ClassDefaultObject) )
 	{
 		Unload();
 	}
@@ -49,13 +49,28 @@ void UAkAudioBank::BeginDestroy()
  */
 bool UAkAudioBank::Load()
 {
-	if( !IsRunningCommandlet() )
+	if (!IsRunningCommandlet())
 	{
 		FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-		if( AudioDevice )
+		if (AudioDevice)
 		{
 			AkBankID BankID;
-			AKRESULT eResult = AudioDevice->LoadBank( this, AK_DEFAULT_POOL_ID, BankID );
+			AKRESULT eResult = AudioDevice->LoadBank(this, AK_DEFAULT_POOL_ID, BankID);
+			return (eResult == AK_Success) ? true : false;
+		}
+	}
+
+	return false;
+}
+
+bool UAkAudioBank::Load(FWaitEndBankAction* LoadBankLatentAction)
+{
+	if (!IsRunningCommandlet())
+	{
+		FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
+		if (AudioDevice)
+		{
+			AKRESULT eResult = AudioDevice->LoadBank(this, LoadBankLatentAction);
 			return (eResult == AK_Success) ? true : false;
 		}
 	}
@@ -72,13 +87,29 @@ bool UAkAudioBank::Load()
  */
 bool UAkAudioBank::LoadAsync(void* in_pfnBankCallback, void* in_pCookie)
 {
-	if( !IsRunningCommandlet() )
+	if (!IsRunningCommandlet())
 	{
 		FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-		if( AudioDevice )
+		if (AudioDevice)
 		{
 			AkBankID BankID;
-			AKRESULT eResult = AudioDevice->LoadBank( this, (AkBankCallbackFunc)in_pfnBankCallback, in_pCookie, AK_DEFAULT_POOL_ID, BankID );
+			AKRESULT eResult = AudioDevice->LoadBank(this, (AkBankCallbackFunc)in_pfnBankCallback, in_pCookie, AK_DEFAULT_POOL_ID, BankID);
+			return (eResult == AK_Success) ? true : false;
+		}
+	}
+
+	return false;
+}
+
+bool UAkAudioBank::LoadAsync(const FOnAkBankCallback& BankLoadedCallback)
+{
+	if (!IsRunningCommandlet())
+	{
+		FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
+		if (AudioDevice)
+		{
+			AkBankID BankID;
+			AKRESULT eResult = AudioDevice->LoadBankAsync(this, BankLoadedCallback, AK_DEFAULT_POOL_ID, BankID);
 			return (eResult == AK_Success) ? true : false;
 		}
 	}
@@ -91,16 +122,28 @@ bool UAkAudioBank::LoadAsync(void* in_pfnBankCallback, void* in_pCookie)
  */
 void UAkAudioBank::Unload()
 {
-	if( !IsRunningCommandlet() )
+	if (!IsRunningCommandlet())
 	{
 		FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-		if( AudioDevice )
+		if (AudioDevice)
 		{
-			AudioDevice->UnloadBank( this );
+			AudioDevice->UnloadBank(this);
 		}
 	}
 }
-		
+
+void UAkAudioBank::Unload(FWaitEndBankAction* UnloadBankLatentAction)
+{
+	if (!IsRunningCommandlet())
+	{
+		FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
+		if (AudioDevice)
+		{
+			AudioDevice->UnloadBank(this, UnloadBankLatentAction);
+		}
+	}
+}
+
 /**
  * Unloads an AkBank asynchronously.
  *
@@ -109,13 +152,30 @@ void UAkAudioBank::Unload()
  */
 void UAkAudioBank::UnloadAsync(void* in_pfnBankCallback, void* in_pCookie)
 {
-	if( !IsRunningCommandlet() )
+	if (!IsRunningCommandlet())
 	{
 		AKRESULT eResult = AK_Fail;
 		FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-		if( AudioDevice )
+		if (AudioDevice)
 		{
-			eResult = AudioDevice->UnloadBank( this, (AkBankCallbackFunc)in_pfnBankCallback, in_pCookie );
+			eResult = AudioDevice->UnloadBank(this, (AkBankCallbackFunc)in_pfnBankCallback, in_pCookie);
+			if (eResult != AK_Success)
+			{
+				UE_LOG(LogAkAudio, Warning, TEXT("Failed to unload SoundBank %s"), *GetName());
+			}
+		}
+	}
+}
+
+void UAkAudioBank::UnloadAsync(const FOnAkBankCallback& BankUnloadedCallback)
+{
+	if (!IsRunningCommandlet())
+	{
+		AKRESULT eResult = AK_Fail;
+		FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
+		if (AudioDevice)
+		{
+			eResult = AudioDevice->UnloadBankAsync(this, BankUnloadedCallback);
 			if (eResult != AK_Success)
 			{
 				UE_LOG(LogAkAudio, Warning, TEXT("Failed to unload SoundBank %s"), *GetName());

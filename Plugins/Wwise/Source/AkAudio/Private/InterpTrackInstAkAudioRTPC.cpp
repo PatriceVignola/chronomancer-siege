@@ -4,8 +4,8 @@
 	InterpTrackInstAkRTPC.h:
 =============================================================================*/
 
-#include "AkAudioDevice.h"
 #include "InterpTrackInstAkAudioRTPC.h"
+#include "AkAudioDevice.h"
 
 /*------------------------------------------------------------------------------------
 	UInterpTrackInstAkAudioRTPC

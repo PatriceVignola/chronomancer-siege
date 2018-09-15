@@ -4,9 +4,19 @@
 	AkAudioClasses.cpp:
 =============================================================================*/
 
+#include "AkGameplayStatics.h"
 #include "AkAudioDevice.h"
 #include "AkAudioClasses.h"
 #include "Net/UnrealNetwork.h"
+#include "EngineUtils.h"
+#include "Model.h"
+#include "UObject/UObjectIterator.h"
+#include "Engine/GameEngine.h"
+#include "Misc/ScopeLock.h"
+
+
+bool UAkGameplayStatics::m_bSoundEngineRecording = false;
+float UAkGameplayStatics::OcclusionScalingFactor = 1.0f;
 
 /*-----------------------------------------------------------------------------
 	UAkGameplayStatics.
@@ -35,6 +45,54 @@ class UAkComponent * UAkGameplayStatics::GetAkComponent( class USceneComponent* 
 	return NULL;
 }
 
+bool UAkGameplayStatics::IsEditor()
+{
+#if WITH_EDITOR
+	return true;
+#else
+	return false;
+#endif
+}
+
+bool UAkGameplayStatics::IsGame(UObject* WorldContextObject)
+{
+	EWorldType::Type WorldType = EWorldType::None;
+	if (WorldContextObject)
+	{
+#if UE_4_17_OR_LATER
+		UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::ReturnNull);
+#else
+		UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject);
+#endif
+		if(World)
+			WorldType = World->WorldType;
+	}
+
+	return WorldType == EWorldType::Game || WorldType == EWorldType::GamePreview || WorldType == EWorldType::PIE;
+}
+
+struct AkDeviceAndWorld
+{
+	FAkAudioDevice* AkAudioDevice;
+	UWorld* CurrentWorld;
+
+	AkDeviceAndWorld(AActor* in_pActor) :
+		AkAudioDevice(FAkAudioDevice::Get()),
+		CurrentWorld(in_pActor ? in_pActor->GetWorld() : nullptr)
+	{}
+
+	AkDeviceAndWorld(UObject* in_pWorldContextObject) :
+		AkAudioDevice(FAkAudioDevice::Get()),
+#if UE_4_17_OR_LATER
+		CurrentWorld(GEngine->GetWorldFromContextObject(in_pWorldContextObject, EGetWorldErrorMode::ReturnNull))
+#else
+		CurrentWorld(GEngine->GetWorldFromContextObject(in_pWorldContextObject))
+#endif // UE_4_17_OR_LATER
+	{}
+
+	bool IsValid() const { return (CurrentWorld && CurrentWorld->AllowAudioPlayback() && AkAudioDevice); }
+};
+
 int32 UAkGameplayStatics::PostEventAttached(class UAkAudioEvent* in_pAkEvent, class AActor* in_pActor, FName in_attachPointName, bool in_stopWhenAttachedToDestroyed, FString EventName)
 {
 	if (in_pAkEvent == NULL && EventName.IsEmpty())
@@ -49,48 +107,77 @@ int32 UAkGameplayStatics::PostEventAttached(class UAkAudioEvent* in_pAkEvent, cl
 		return AK_INVALID_PLAYING_ID;
 	}
 
-	FAkAudioDevice * AkAudioDevice = FAkAudioDevice::Get();
-	UWorld* CurrentWorld = in_pActor->GetWorld();
-	if( CurrentWorld->AllowAudioPlayback() && AkAudioDevice )
+	AkDeviceAndWorld DeviceAndWorld(in_pActor);
+	if (DeviceAndWorld.IsValid())
 	{
-		if (in_pAkEvent != NULL) 
-		{
-			return AkAudioDevice->PostEvent(in_pAkEvent, in_pActor, 0, NULL, NULL, in_stopWhenAttachedToDestroyed);
-		}
-		else
-		{
-			return AkAudioDevice->PostEvent(EventName, in_pActor, 0, NULL, NULL, in_stopWhenAttachedToDestroyed);
-		}
+		return DeviceAndWorld.AkAudioDevice->PostEvent(GET_AK_EVENT_NAME(in_pAkEvent, EventName), in_pActor, 0, NULL, NULL, in_stopWhenAttachedToDestroyed);
 	}
 
 	return AK_INVALID_PLAYING_ID;
 }
 
-int32 UAkGameplayStatics::PostEvent(class UAkAudioEvent* in_pAkEvent, class AActor* in_pActor, bool in_stopWhenAttachedToDestroyed, FString EventName)
+int32 UAkGameplayStatics::PostEvent(class UAkAudioEvent* AkEvent,
+	class AActor* Actor,
+	int32 CallbackMask,
+	const FOnAkPostEventCallback& PostEventCallback,
+	bool bStopWhenAttachedToDestroyed,
+	FString EventName)
 {
-	if (in_pAkEvent == NULL && EventName.IsEmpty())
+	if (AkEvent == NULL && EventName.IsEmpty())
 	{
 		UE_LOG(LogScript, Warning, TEXT("UAkGameplayStatics::PostEvent: No Event specified!"));
 		return AK_INVALID_PLAYING_ID;
 	}
 
-	if ( in_pActor == NULL )
+	if (Actor == NULL)
 	{
 		UE_LOG(LogScript, Warning, TEXT("UAkGameplayStatics::PostEvent: NULL Actor specified!"));
 		return AK_INVALID_PLAYING_ID;
 	}
 
-	FAkAudioDevice * AkAudioDevice = FAkAudioDevice::Get();
-	UWorld* CurrentWorld = in_pActor->GetWorld();
-	if( CurrentWorld->AllowAudioPlayback() && AkAudioDevice )
+	AkDeviceAndWorld DeviceAndWorld(Actor);
+	if (DeviceAndWorld.IsValid())
 	{
-		if (in_pAkEvent != NULL)
+		AkCallbackType AkCallbackMask = AkCallbackTypeHelpers::GetCallbackMaskFromBlueprintMask(CallbackMask);
+		return DeviceAndWorld.AkAudioDevice->PostEvent(GET_AK_EVENT_NAME(AkEvent, EventName), Actor, PostEventCallback, AkCallbackMask);
+	}
+
+	return AK_INVALID_PLAYING_ID;
+}
+
+int32 UAkGameplayStatics::PostAndWaitForEndOfEvent(class UAkAudioEvent* AkEvent,
+	class AActor* Actor,
+	bool bStopWhenAttachedToDestroyed,
+	FString EventName,
+	FLatentActionInfo LatentInfo)
+{
+	if (AkEvent == NULL && EventName.IsEmpty())
+	{
+		UE_LOG(LogScript, Warning, TEXT("UAkGameplayStatics::PostEvent: No Event specified!"));
+		return AK_INVALID_PLAYING_ID;
+	}
+
+	if (Actor == NULL)
+	{
+		UE_LOG(LogScript, Warning, TEXT("UAkGameplayStatics::PostEvent: NULL Actor specified!"));
+		return AK_INVALID_PLAYING_ID;
+	}
+
+	AkDeviceAndWorld DeviceAndWorld(Actor);
+	if (DeviceAndWorld.IsValid())
+	{
+		FLatentActionManager& LatentActionManager = DeviceAndWorld.CurrentWorld->GetLatentActionManager();
+		FWaitEndOfEventAction* NewAction = nullptr;
+		if (LatentActionManager.FindExistingAction<FWaitEndOfEventAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) == nullptr)
 		{
-			return AkAudioDevice->PostEvent(in_pAkEvent, in_pActor, 0, NULL, NULL, in_stopWhenAttachedToDestroyed);
+			NewAction = new FWaitEndOfEventAction(LatentInfo);
+			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, NewAction);
 		}
-		else
+		AkPlayingID PlayingID = DeviceAndWorld.AkAudioDevice->PostEventLatentAction(GET_AK_EVENT_NAME(AkEvent, EventName), Actor, bStopWhenAttachedToDestroyed, NewAction);
+
+		if (PlayingID == AK_INVALID_PLAYING_ID)
 		{
-			return AkAudioDevice->PostEvent(EventName, in_pActor, 0, NULL, NULL, in_stopWhenAttachedToDestroyed);
+			NewAction->EventFinished = true;
 		}
 	}
 
@@ -99,21 +186,10 @@ int32 UAkGameplayStatics::PostEvent(class UAkAudioEvent* in_pAkEvent, class AAct
 
 void UAkGameplayStatics::PostEventByName(const FString& EventName, class AActor* in_pActor, bool in_stopWhenAttachedToDestroyed)
 {
-	if ( in_pActor == NULL )
-	{
-		UE_LOG(LogScript, Warning, TEXT("UAkGameplayStatics::PostEventByName: NULL Actor specified!"));
-		return;
-	}
-
-	FAkAudioDevice * AkAudioDevice = FAkAudioDevice::Get();
-	UWorld* CurrentWorld = in_pActor->GetWorld();
-	if( CurrentWorld->AllowAudioPlayback() && AkAudioDevice )
-	{
-		AkAudioDevice->PostEvent(EventName, in_pActor, 0, NULL, NULL, in_stopWhenAttachedToDestroyed);
-	}
+	PostEvent(NULL, in_pActor, 0, FOnAkPostEventCallback(), in_stopWhenAttachedToDestroyed, EventName);
 }
 
-int32 UAkGameplayStatics::PostEventAtLocation( class UAkAudioEvent* in_pAkEvent, FVector Location, FRotator Orientation, const FString& EventName, UObject* WorldContextObject )
+int32 UAkGameplayStatics::PostEventAtLocation(class UAkAudioEvent* in_pAkEvent, FVector Location, FRotator Orientation, const FString& EventName, UObject* WorldContextObject)
 {
 	if ( in_pAkEvent == NULL && EventName.IsEmpty() )
 	{
@@ -121,40 +197,26 @@ int32 UAkGameplayStatics::PostEventAtLocation( class UAkAudioEvent* in_pAkEvent,
 		return AK_INVALID_PLAYING_ID;
 	}
 
-	FAkAudioDevice * AkAudioDevice = FAkAudioDevice::Get();
-	UWorld* CurrentWorld = GEngine->GetWorldFromContextObject(WorldContextObject);
-	if( CurrentWorld->AllowAudioPlayback() && AkAudioDevice )
+	AkDeviceAndWorld DeviceAndWorld(WorldContextObject);
+	if (DeviceAndWorld.IsValid())
 	{
-		if (in_pAkEvent != NULL)
-		{
-			return AkAudioDevice->PostEventAtLocation(in_pAkEvent, Location, Orientation, GEngine->GetWorldFromContextObject(WorldContextObject));
-		}
-		else
-		{
-			return AkAudioDevice->PostEventAtLocation(EventName, Location, Orientation, GEngine->GetWorldFromContextObject(WorldContextObject));
-		}
+		return DeviceAndWorld.AkAudioDevice->PostEventAtLocation(GET_AK_EVENT_NAME(in_pAkEvent, EventName), Location, Orientation, DeviceAndWorld.CurrentWorld);
 	}
 
 	return AK_INVALID_PLAYING_ID;
 }
 
-void UAkGameplayStatics::PostEventAtLocationByName( const FString& EventName, FVector Location, FRotator Orientation, UObject* WorldContextObject )
+void UAkGameplayStatics::PostEventAtLocationByName(const FString& EventName, FVector Location, FRotator Orientation, UObject* WorldContextObject)
 {
-	FAkAudioDevice * AkAudioDevice = FAkAudioDevice::Get();
-	UWorld* CurrentWorld = GEngine->GetWorldFromContextObject(WorldContextObject);
-	if( CurrentWorld->AllowAudioPlayback() && AkAudioDevice )
-	{
-		AkAudioDevice->PostEventAtLocation(EventName, Location, Orientation, GEngine->GetWorldFromContextObject(WorldContextObject) );
-	}
+	PostEventAtLocation(NULL, Location, Orientation, EventName, WorldContextObject);
 }
 
-UAkComponent* UAkGameplayStatics::SpawnAkComponentAtLocation(UObject* WorldContextObject, class UAkAudioEvent* AkEvent, FVector Location, FRotator Orientation, bool AutoPost, const FString& EventName, bool AutoDestroy /* = true*/ )
+UAkComponent* UAkGameplayStatics::SpawnAkComponentAtLocation(UObject* WorldContextObject, class UAkAudioEvent* AkEvent, class UAkAuxBus* EarlyReflectionsBus, FVector Location, FRotator Orientation, bool AutoPost, const FString& EventName, const FString& EarlyReflectionsBusName, bool AutoDestroy /* = true*/)
 {
-	FAkAudioDevice * AkAudioDevice = FAkAudioDevice::Get();
-	UWorld* CurrentWorld = GEngine->GetWorldFromContextObject(WorldContextObject);
-	if( CurrentWorld && CurrentWorld->AllowAudioPlayback() && AkAudioDevice )
+	AkDeviceAndWorld DeviceAndWorld(WorldContextObject);
+	if (DeviceAndWorld.IsValid())
 	{
-		return AkAudioDevice->SpawnAkComponentAtLocation(AkEvent, Location, Orientation, AutoPost, EventName, AutoDestroy, CurrentWorld );
+		return DeviceAndWorld.AkAudioDevice->SpawnAkComponentAtLocation(AkEvent, EarlyReflectionsBus, Location, Orientation, AutoPost, EventName, EarlyReflectionsBusName, AutoDestroy, DeviceAndWorld.CurrentWorld);
 	}
 
 	return nullptr;
@@ -208,6 +270,26 @@ void UAkGameplayStatics::SetSwitch( FName SwitchGroup, FName SwitchState, class 
 	}
 }
 
+void UAkGameplayStatics::SetMultiplePositions(UAkComponent* GameObjectAkComponent, TArray<FTransform> Positions,
+                                              AkMultiPositionType MultiPositionType /*= AkMultiPositionType::MultiPositionType_MultiDirections*/)
+{
+    FAkAudioDevice * pAudioDevice = FAkAudioDevice::Get();
+    if (pAudioDevice)
+    {
+        pAudioDevice->SetMultiplePositions(GameObjectAkComponent, Positions, MultiPositionType);
+    }
+}
+
+void UAkGameplayStatics::SetMultipleChannelEmitterPositions(UAkComponent* GameObjectAkComponent, TArray<AkChannelConfiguration> ChannelMasks, TArray<FTransform> Positions,
+                                                            AkMultiPositionType MultiPositionType /*= AkMultiPositionType::MultiPositionType_MultiDirections*/)
+{
+    FAkAudioDevice * pAudioDevice = FAkAudioDevice::Get();
+    if (pAudioDevice)
+    {
+        pAudioDevice->SetMultiplePositions(GameObjectAkComponent, ChannelMasks, Positions, MultiPositionType);
+    }
+}
+
 void UAkGameplayStatics::UseReverbVolumes(bool inUseReverbVolumes, class AActor* Actor )
 {
 	if ( Actor == NULL )
@@ -223,6 +305,31 @@ void UAkGameplayStatics::UseReverbVolumes(bool inUseReverbVolumes, class AActor*
 		if( ComponentToSet != NULL )
 		{
 			ComponentToSet->UseReverbVolumes(inUseReverbVolumes);
+		}
+	}
+}
+
+void UAkGameplayStatics::UseEarlyReflections(class AActor* Actor,
+	class UAkAuxBus* AuxBus,
+	int Order,
+	float BusSendGain,
+	float MaxPathLength,
+	bool SpotReflectors,
+	const FString& AuxBusName)
+{
+	if (Actor == NULL) 
+	{
+		UE_LOG(LogScript, Warning, TEXT("UAkGameplayStatics::UseEarlyReflections: NULL Actor specified!"));
+		return;
+	}
+
+	FAkAudioDevice * AudioDevice = FAkAudioDevice::Get(); 
+	if (AudioDevice)
+	{
+		UAkComponent * ComponentToSet = AudioDevice->GetAkComponent(Actor->GetRootComponent(), FName(), NULL, EAttachLocation::KeepRelativeOffset);
+		if (ComponentToSet != NULL)
+		{
+			ComponentToSet->UseEarlyReflections(AuxBus, Order, BusSendGain, MaxPathLength, SpotReflectors, AuxBusName);
 		}
 	}
 }
@@ -243,6 +350,27 @@ void UAkGameplayStatics::SetOutputBusVolume(float BusVolume, class AActor* Actor
 		{
 			ComponentToSet->SetOutputBusVolume(BusVolume);
 		}
+	}
+}
+
+void UAkGameplayStatics::SetBusConfig(const FString& in_BusName, AkChannelConfiguration ChannelConfiguration)
+{
+	FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
+	if (AudioDevice)
+	{
+		AkChannelConfig config;
+        FAkAudioDevice::GetChannelConfig(ChannelConfiguration, config);
+		AudioDevice->SetBusConfig(in_BusName, config);
+	}
+}
+
+void UAkGameplayStatics::SetPanningRule(PanningRule PanRule)
+{
+	FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
+	if (AudioDevice)
+	{
+		AkPanningRule AkPanRule = (PanRule == PanningRule::PanningRule_Headphones) ? AkPanningRule_Headphones : AkPanningRule_Speakers;
+		AudioDevice->SetPanningRule(AkPanRule);
 	}
 }
 
@@ -291,17 +419,16 @@ void UAkGameplayStatics::StopAll()
 
 void UAkGameplayStatics::StartAllAmbientSounds(UObject* WorldContextObject)
 {
-	UWorld* CurrentWorld = GEngine->GetWorldFromContextObject(WorldContextObject);
-	for( FActorIterator It(CurrentWorld);It;++It )
+	AkDeviceAndWorld DeviceAndWorld(WorldContextObject);
+	if (DeviceAndWorld.IsValid())
 	{
-		AAkAmbientSound* pAmbientSound = Cast<AAkAmbientSound>(*It);
-		if( pAmbientSound != NULL)
+		for (FActorIterator It(DeviceAndWorld.CurrentWorld);It;++It)
 		{
-			FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-			if( AudioDevice )
+			AAkAmbientSound* pAmbientSound = Cast<AAkAmbientSound>(*It);
+			if (pAmbientSound != NULL)
 			{
 				UAkComponent* pComponent = pAmbientSound->AkComponent;
-				if( pComponent && GWorld->Scene == pComponent->GetScene() )
+				if (pComponent && GWorld->Scene == pComponent->GetScene())
 				{
 					pAmbientSound->StartPlaying();
 				}
@@ -312,17 +439,16 @@ void UAkGameplayStatics::StartAllAmbientSounds(UObject* WorldContextObject)
 
 void UAkGameplayStatics::StopAllAmbientSounds(UObject* WorldContextObject)
 {
-	UWorld* CurrentWorld = GEngine->GetWorldFromContextObject(WorldContextObject);
-	for( FActorIterator It(CurrentWorld);It;++It)
+	AkDeviceAndWorld DeviceAndWorld(WorldContextObject);
+	if (DeviceAndWorld.IsValid())
 	{
-		AAkAmbientSound* pAmbientSound = Cast<AAkAmbientSound>(*It);
-		if( pAmbientSound != NULL)
+		for (FActorIterator It(DeviceAndWorld.CurrentWorld);It;++It)
 		{
-			FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-			if( AudioDevice )
+			AAkAmbientSound* pAmbientSound = Cast<AAkAmbientSound>(*It);
+			if (pAmbientSound != NULL)
 			{
 				UAkComponent* pComponent = pAmbientSound->AkComponent;
-				if( pComponent && GWorld->Scene == pComponent->GetScene() )
+				if (pComponent && GWorld->Scene == pComponent->GetScene())
 				{
 					pAmbientSound->StopPlaying();
 				}
@@ -340,15 +466,38 @@ void UAkGameplayStatics::ClearBanks()
 	}
 }
 
-void UAkGameplayStatics::LoadBank(UAkAudioBank * bank, const FString& BankName)
+void UAkGameplayStatics::LoadBank(UAkAudioBank * bank, const FString& BankName, FLatentActionInfo LatentInfo, UObject* WorldContextObject)
 {
-	if ( bank )
+	if (bank)
 	{
-		bank->Load();
+		AkDeviceAndWorld DeviceAndWorld(WorldContextObject);
+		FLatentActionManager& LatentActionManager = DeviceAndWorld.CurrentWorld->GetLatentActionManager();
+		FWaitEndBankAction* NewAction = nullptr;
+		if (LatentActionManager.FindExistingAction<FWaitEndBankAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) == nullptr)
+		{
+			NewAction = new FWaitEndBankAction(LatentInfo);
+			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, NewAction);
+		}
+		if (!bank->Load(NewAction))
+		{
+			NewAction->ActionDone = true;
+		}
 	}
 	else
 	{
 		LoadBankByName(BankName);
+	}
+}
+
+void UAkGameplayStatics::LoadBankAsync(UAkAudioBank * bank, const FOnAkBankCallback& BankLoadedCallback)
+{
+	if (bank)
+	{
+		bank->LoadAsync(BankLoadedCallback);
+	}
+	else
+	{
+		UE_LOG(LogScript, Warning, TEXT("UAkGameplayStatics::LoadBankAsync: NULL AudioBank specified!"));
 	}
 }
 
@@ -370,14 +519,10 @@ void UAkGameplayStatics::LoadBankByName(const FString& BankName)
 			}
 
 			// Bank not found in the assets, load it by name anyway
-			AkUInt32 bankID;
-			AudioDevice->LoadBank(BankName, AK_DEFAULT_POOL_ID, bankID);
 		}
-		else
-		{
-			AkUInt32 bankID;
-			AudioDevice->LoadBank(BankName, AK_DEFAULT_POOL_ID, bankID);
-		}
+
+		AkUInt32 bankID;
+		AudioDevice->LoadBank(BankName, AK_DEFAULT_POOL_ID, bankID);
 	}
 }
 
@@ -448,15 +593,35 @@ void UAkGameplayStatics::LoadInitBank()
 }
 
 
-void UAkGameplayStatics::UnloadBank(class UAkAudioBank * bank, const FString& BankName)
+void UAkGameplayStatics::UnloadBank(class UAkAudioBank * bank, const FString& BankName, FLatentActionInfo LatentInfo, UObject* WorldContextObject)
 {
 	if ( bank )
 	{
-		bank->Unload();
+		AkDeviceAndWorld DeviceAndWorld(WorldContextObject);
+		FLatentActionManager& LatentActionManager = DeviceAndWorld.CurrentWorld->GetLatentActionManager();
+		FWaitEndBankAction* NewAction = nullptr;
+		if (LatentActionManager.FindExistingAction<FWaitEndBankAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) == nullptr)
+		{
+			NewAction = new FWaitEndBankAction(LatentInfo);
+			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, NewAction);
+		}
+		bank->Unload(NewAction);
 	}
 	else
 	{
 		UnloadBankByName(BankName);
+	}
+}
+
+void UAkGameplayStatics::UnloadBankAsync(UAkAudioBank * bank, const FOnAkBankCallback& BankUnloadedCallback)
+{
+	if (bank)
+	{
+		bank->UnloadAsync(BankUnloadedCallback);
+	}
+	else
+	{
+		UE_LOG(LogScript, Warning, TEXT("UAkGameplayStatics::UnloadBankAsync: NULL AudioBank specified!"));
 	}
 }
 
@@ -476,14 +641,10 @@ void UAkGameplayStatics::UnloadBankByName(const FString& BankName)
 				}
 			}
 
-			
 			// Bank not found in the assets, unload it by name anyway
-			AudioDevice->UnloadBank(BankName);
 		}
-		else
-		{
-			AudioDevice->UnloadBank(BankName);
-		}
+
+		AudioDevice->UnloadBank(BankName);
 	}
 }
 

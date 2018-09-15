@@ -4,11 +4,12 @@
 	WwiseWwuParser.cpp
 ------------------------------------------------------------------------------------*/
 
-#include "AudiokineticToolsPrivatePCH.h"
-#include "WwisePicker/WwiseTreeItem.h"
-#include "WwisePicker/SWwisePicker.h"
 #include "WwisePicker/WwiseWwuParser.h"
+#include "WaapiPicker/WwiseTreeItem.h"
+#include "WwisePicker/SWwisePicker.h"
 #include "AkAudioBankGenerationHelpers.h"
+#include "Misc/ScopedSlowTask.h"
+#include "HAL/FileManager.h"
 
 #define LOCTEXT_NAMESPACE "AkAudio"
 
@@ -24,9 +25,9 @@ bool FWwiseWwuParser::Populate()
 
 	EWwiseTreeItemType::Type CurrentType = EWwiseTreeItemType::Event;
 	bool bSuccess = true;
-	while (CurrentType < EWwiseTreeItemType::NUM_DRAGGABLE_WWISE_ITEMS && bSuccess)
+	while ((int)CurrentType < (int)EWwiseTreeItemType::NUM_DRAGGABLE_WWISE_ITEMS && bSuccess)
 	{
-		FullTreeRootItems[CurrentType] = MakeShareable(new FWwiseTreeItem(EWwiseTreeItemType::ItemNames[CurrentType], EWwiseTreeItemType::ItemNames[CurrentType], nullptr, EWwiseTreeItemType::PhysicalFolder));
+		FullTreeRootItems[CurrentType] = MakeShareable(new FWwiseTreeItem(EWwiseTreeItemType::ItemNames[CurrentType], EWwiseTreeItemType::ItemNames[CurrentType], nullptr, EWwiseTreeItemType::PhysicalFolder, FGuid()));
 		bSuccess = BuildSubTrees(EWwiseTreeItemType::FolderNames[CurrentType], CurrentType);
 		CurrentType = (EWwiseTreeItemType::Type)(((int)CurrentType) + 1);
 	}
@@ -48,25 +49,22 @@ TSharedPtr<FWwiseTreeItem> FWwiseWwuParser::GetTree(TSharedPtr<StringFilter> Sea
 	{
 		TSharedPtr<FWwiseTreeItem> CurrentTreeItem = iter->Value;
 
-		if( CurrentTreeItem->ItemType != EWwiseTreeItemType::StandaloneWorkUnit )
+		if( CurrentTreeItem->ItemType == EWwiseTreeItemType::StandaloneWorkUnit )
 		{
-			continue;
+			FString WwuRelativePhysicalPath = iter->Key;
+			WwuRelativePhysicalPath.RemoveFromStart(ProjectRootFolder);
+
+			TSharedPtr<FWwiseTreeItem> Parent = CreatePhysicalFolderItems(WwuRelativePhysicalPath, FullTreeRootItems[ItemType]);
+			Parent->Children.Add(CurrentTreeItem);
+			CurrentTreeItem->Parent = Parent;
 		}
-
-		FString WwuRelativePhysicalPath = iter->Key;
-		WwuRelativePhysicalPath.RemoveFromStart(ProjectRootFolder);
-
-
-		TSharedPtr<FWwiseTreeItem> Parent = CreatePhysicalFolderItems(WwuRelativePhysicalPath, FullTreeRootItems[ItemType]);
-		Parent->Children.Add(CurrentTreeItem);
-		CurrentTreeItem->Parent = Parent;
 	}
 	FullTreeRootItems[ItemType]->SortChildren();
 
 	FString CurrentFilterText = SearchBoxFilter->GetRawFilterText().ToString();
 	if( !CurrentFilterText.IsEmpty() && CurrentTreeRootItem.IsValid() )
 	{
-		TSharedPtr<FWwiseTreeItem> FilteredTreeRootItem = MakeShareable(new FWwiseTreeItem(EWwiseTreeItemType::ItemNames[ItemType], EWwiseTreeItemType::ItemNames[ItemType], nullptr, EWwiseTreeItemType::PhysicalFolder));
+		TSharedPtr<FWwiseTreeItem> FilteredTreeRootItem = MakeShareable(new FWwiseTreeItem(EWwiseTreeItemType::ItemNames[ItemType], EWwiseTreeItemType::ItemNames[ItemType], nullptr, EWwiseTreeItemType::PhysicalFolder, FGuid()));
 
 		if( !OldFilterText.IsEmpty() && CurrentFilterText.StartsWith(OldFilterText) )
 		{
@@ -90,7 +88,7 @@ void FWwiseWwuParser::CopyTree(TSharedPtr<FWwiseTreeItem> SourceTreeItem, TShare
 	for(int32 i = 0; i < SourceTreeItem->Children.Num(); i++)
 	{
 		TSharedPtr<FWwiseTreeItem> CurrItem = SourceTreeItem->Children[i];
-		TSharedPtr<FWwiseTreeItem> NewItem =  MakeShareable(new FWwiseTreeItem(CurrItem->DisplayName, CurrItem->FolderPath, CurrItem->Parent.Pin(), CurrItem->ItemType));
+		TSharedPtr<FWwiseTreeItem> NewItem =  MakeShareable(new FWwiseTreeItem(CurrItem->DisplayName, CurrItem->FolderPath, CurrItem->Parent.Pin(), CurrItem->ItemType, FGuid()));
 		DestTreeItem->Children.Add(NewItem);
 
 		CopyTree(CurrItem, NewItem);
@@ -128,7 +126,7 @@ TSharedPtr<FWwiseTreeItem> FWwiseWwuParser::CreatePhysicalFolderItems(const FStr
 		if( !ChildItem.IsValid() )
 		{
 			FString ItemPath = FPaths::Combine(*CurrentItem->FolderPath, *SplitPath[i]);
-			ChildItem = MakeShareable( new FWwiseTreeItem(SplitPath[i], ItemPath, CurrentItem, EWwiseTreeItemType::PhysicalFolder ) );
+			ChildItem = MakeShareable( new FWwiseTreeItem(SplitPath[i], ItemPath, CurrentItem, EWwiseTreeItemType::PhysicalFolder, FGuid()) );
 			CurrentItem->Children.Add(ChildItem);
 		}
 
@@ -255,7 +253,7 @@ TSharedPtr<FWwiseTreeItem> FWwiseWwuParser::CreateWwuTree(const FString& WwuPath
 		FString RelativePath = WwuPath;
 		RelativePath.RemoveFromStart(ProjectRootFolder);
 		RelativePath.RemoveFromEnd(TEXT(".wwu"));
-		RootWwuItem = MakeShareable(new FWwiseTreeItem(WwuName, RelativePath, nullptr, WwuType));
+		RootWwuItem = MakeShareable(new FWwiseTreeItem(WwuName, RelativePath, nullptr, WwuType, FGuid()));
 		WwuSubTrees.FindOrAdd(ItemType).Add(WwuPath, RootWwuItem);
 	}
 
@@ -341,11 +339,18 @@ bool FWwiseWwuParser::RecurseChildren(const FXmlNode* NodeToParse, TSharedPtr<FW
 		FString CurrentPath = FPaths::Combine(*TreeItem->FolderPath, *CurrentName);
 		if( CurrentTag == TEXT("Event") )
 		{
-			TreeItem->Children.Add(MakeShareable(new FWwiseTreeItem(CurrentName, CurrentPath, TreeItem, ItemType)));
+			TreeItem->Children.Add(MakeShareable(new FWwiseTreeItem(CurrentName, CurrentPath, TreeItem, ItemType, FGuid())));
+		}
+		else if (CurrentTag == TEXT("AcousticTexture"))
+		{
+			if (ItemType == EWwiseTreeItemType::Type::AcousticTexture)
+			{
+				TreeItem->Children.Add(MakeShareable(new FWwiseTreeItem(CurrentName, CurrentPath, TreeItem, ItemType, FGuid())));
+			}
 		}
 		else if (CurrentTag == TEXT("AuxBus"))
 		{
-			TSharedPtr<FWwiseTreeItem> NewItem = MakeShareable(new FWwiseTreeItem(CurrentName, CurrentPath, TreeItem, ItemType));
+			TSharedPtr<FWwiseTreeItem> NewItem = MakeShareable(new FWwiseTreeItem(CurrentName, CurrentPath, TreeItem, ItemType, FGuid()));
 			TreeItem->Children.Add(NewItem);
 			const FXmlNode* ChildrenNode = CurrentNode->FindChildNode(TEXT("ChildrenList"));
 			if (ChildrenNode)
@@ -376,7 +381,7 @@ bool FWwiseWwuParser::RecurseChildren(const FXmlNode* NodeToParse, TSharedPtr<FW
 			{
 				currentItemType = EWwiseTreeItemType::Bus;
 			}
-			TSharedPtr<FWwiseTreeItem> FolderItem  = MakeShareable(new FWwiseTreeItem(CurrentName, CurrentPath, TreeItem, currentItemType));
+			TSharedPtr<FWwiseTreeItem> FolderItem  = MakeShareable(new FWwiseTreeItem(CurrentName, CurrentPath, TreeItem, currentItemType, FGuid()));
 			TreeItem->Children.Add(FolderItem);
 			const FXmlNode* ChildNode = CurrentNode->FindChildNode(TEXT("ChildrenList"));
 			if( ChildNode )

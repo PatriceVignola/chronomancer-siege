@@ -2,11 +2,11 @@
 	"FileVersion" : 1,
 	
 	"FriendlyName" : "Wwise Unreal Engine 4 Integration",
-	"Version" : 201620317,
-	"VersionName" : "2016.2.1.5995.317",
+	"Version" : 201811082,
+	"VersionName" : "2018.1.1.6727.1082",
 	"CreatedBy" : "Audiokinetic, Inc.",
 	"CreatedByURL" : "http://audiokinetic.com",
-	"EngineVersion" : "4.14.0",
+	"EngineVersion" : "4.20.0",
 	"Description" : "Wwise integration for Unreal Engine 4",
 	"Category" : "Audio",
 	"EnabledByDefault" : true,
@@ -20,7 +20,16 @@
 		},
 		{
 			"Name" : "AudiokineticTools",
-			"Type" : "Editor"
+			"Type" : "Editor",
+			"LoadingPhase" : "PostEngineInit"
+		}
+	],
+	
+	"Plugins":
+	[
+		{
+			"Name": "MatineeToLevelSequence",
+			"Enabled": true
 		}
 	],
 	

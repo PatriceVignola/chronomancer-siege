@@ -4,6 +4,8 @@
 
 #include "AkAudioEvent.h"
 #include "Matinee/InterpTrack.h"
+#include "IMatinee.h"
+
 #include "InterpTrackHelper.h"
 #include "InterpTrackAkAudioEventHelper.generated.h"
 

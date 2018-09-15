@@ -12,7 +12,7 @@
  */
 
 /** Information for one event in the track. */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FAkAudioEventTrackKey
 {
 	GENERATED_USTRUCT_BODY()

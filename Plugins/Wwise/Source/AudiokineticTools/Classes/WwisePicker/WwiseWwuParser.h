@@ -5,7 +5,8 @@
 ------------------------------------------------------------------------------------*/
 #pragma once
 
-#include "WwisePicker/WwiseTreeItem.h"
+#include "WwisePicker/SWwisePicker.h"
+#include "WaapiPicker/WwiseTreeItem.h"
 #include "XmlFile.h"
 
 class FWwiseWwuParser

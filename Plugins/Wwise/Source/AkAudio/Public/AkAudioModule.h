@@ -1,7 +1,9 @@
 // Copyright (c) 2006-2012 Audiokinetic Inc. / All Rights Reserved
 #pragma once
 
-#include "ModuleManager.h"
+#include "AkAudioDevice.h"
+#include "Modules/ModuleManager.h"
+#include "Containers/Ticker.h"
 
 /**
  * The public interface to this module.  In most cases, this interface is only public to sibling modules 
@@ -42,6 +44,8 @@ public:
 	virtual void ShutdownModule() override;
 
 	FAkAudioDevice * GetAkAudioDevice();
+
+	static FAkAudioModule* AkAudioModuleIntance;
 
 private:
 	FAkAudioDevice * AkAudioDevice;

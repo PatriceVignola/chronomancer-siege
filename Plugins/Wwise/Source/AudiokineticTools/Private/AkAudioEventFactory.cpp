@@ -3,9 +3,8 @@
 /*=============================================================================
 	AkAudioEventFactory.cpp:
 =============================================================================*/
-#include "AudiokineticToolsPrivatePCH.h"
-#include "AkAudioEvent.h"
 #include "AkAudioEventFactory.h"
+#include "AkAudioEvent.h"
 
 /*------------------------------------------------------------------------------
 	UAkAudioEventFactory.

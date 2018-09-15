@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 #ifndef _AK_OBJECT_H_
@@ -54,9 +54,7 @@ AkForceInline void * operator new( size_t /*size*/, void * memory, const AkPlace
 
 // Matching operator delete for AK placement new. This needs to be defined to avoid compiler warnings
 // with projects built with exceptions enabled.
-#ifndef AK_3DS
 AkForceInline void operator delete( void *, void *, const AkPlacementNewKey & ) throw() {}
-#endif
 
 //-----------------------------------------------------------------------------
 // Macros
@@ -86,6 +84,7 @@ struct AkPoolNewKey
 
 #define AkFree(_pool,_pvmem)				(AK::MemoryMgr::Free((_pool),(_pvmem)))
 #define AkFalign(_pool,_pvmem)				(AK::MemoryMgr::Falign((_pool),(_pvmem)))
+#define AkRealloc(_pool, _pvmem, _size)		(AK::MemoryMgr::Realloc((_pool), _pvmem, _size))
 
 #if defined (AK_MEMDEBUG)
 
@@ -99,10 +98,8 @@ struct AkPoolNewKey
 		return AK::MemoryMgr::dMalign( in_PoolId, size, in_align, szFile, ulLine );
 	}
 	
-	#ifndef AK_3DS
 	AkForceInline void operator delete(void *,AkMemPoolId,const AkPoolNewKey &,const char*,AkUInt32) throw() {}
 	AkForceInline void operator delete(void *,AkMemPoolId,const AkPoolNewKey &,AkUInt32,const char*,AkUInt32) throw() {}
-	#endif
 	
 #else
 
@@ -116,24 +113,10 @@ struct AkPoolNewKey
 		return AK::MemoryMgr::Malign( in_PoolId, size, in_align );
 	}
 	
-	#ifndef AK_3DS
 	AkForceInline void operator delete(void *,AkMemPoolId,const AkPoolNewKey &) throw() {}
 	AkForceInline void operator delete(void *,AkMemPoolId,const AkPoolNewKey &,AkUInt32) throw() {}
-	#endif
 
 #endif
-
-//-----------------------------------------------------------------------------
-// Name: Class CAkObject
-// Desc: Base allocator object: DEPRECATED.
-//-----------------------------------------------------------------------------
-
-class CAkObject
-{
-public:
-	/// Destructor
-    virtual ~CAkObject( ) { }
-};
 
 template <class T>
 AkForceInline void AkDelete( AkMemPoolId in_PoolId, T * in_pObject )

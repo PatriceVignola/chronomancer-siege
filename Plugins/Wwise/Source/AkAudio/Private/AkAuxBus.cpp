@@ -4,6 +4,7 @@
 	AkReverbVolume.cpp:
 =============================================================================*/
 
+#include "AkAuxBus.h"
 #include "AkAudioDevice.h"
 #include "AkAudioClasses.h"
 #include "Net/UnrealNetwork.h"
@@ -16,6 +17,10 @@ UAkAuxBus::UAkAuxBus(const class FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
 {
 	// Property initialization
-	AuxBusId = AK::SoundEngine::GetIDFromString(TCHAR_TO_ANSI(*GetName()));
+	FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
+	if(AkAudioDevice)
+		AuxBusId = AkAudioDevice->GetIDFromString(GetName());
+	else
+		AuxBusId = AK_INVALID_AUX_ID;
 }
 

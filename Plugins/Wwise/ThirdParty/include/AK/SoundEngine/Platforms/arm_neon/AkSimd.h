@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 // AkSimd.h
@@ -125,12 +125,7 @@ typedef float32x4x4_t	AKSIMD_V4F32X4;
 #define AKSIMD_LOAD_V4I16( __addr__ ) vld1_s16( (const int16_t*)(__addr__) )
 
 /// Loads unaligned 128-bit value (see _mm_loadu_si128)
-#if defined(AK_VITA) 
-// Due to a compiler bug in sony sdk 1.8 and 2.0, this workaround is required. Removed when fixed.
-#define AKSIMD_LOADU_V4I32( __addr__ ) *__addr__ 
-#else
 #define AKSIMD_LOADU_V4I32( __addr__ ) vld1q_s32( (const int32_t*)(__addr__))
-#endif
 /// Sets the four 32-bit integer values to zero (see _mm_setzero_si128)
 #define AKSIMD_SETZERO_V4I32() vdupq_n_s32( 0 )
 
@@ -230,6 +225,20 @@ typedef float32x4x4_t	AKSIMD_V4F32X4;
 /// Compares for less than or equal (see _mm_cmple_ps)
 #define AKSIMD_CMPLE_V4F32( __a__, __b__ ) vcleq_f32( (__a__), (__b__) )
 
+#define AKSIMD_CMPLT_V4I32( __a__, __b__) vreinterpretq_s32_u32(vcltq_s32(__a__, __b__))
+#define AKSIMD_CMPGT_V4I32( __a__, __b__)  vreinterpretq_s32_u32(vcgtq_s32(__a__,__b__))
+
+#define AKSIMD_XOR_V4I32(__a__, __b__)  veorq_s32(__a__, __b__)
+
+static AkForceInline AKSIMD_V4F32 AKSIMD_XOR_V4F32( const AKSIMD_V4F32& in_vec0, const AKSIMD_V4F32& in_vec1 )
+{
+	uint32x4_t t0 = vreinterpretq_u32_f32(in_vec0);
+	uint32x4_t t1 = vreinterpretq_u32_f32(in_vec1);
+	uint32x4_t res = veorq_u32(t0, t1);
+	return vreinterpretq_f32_u32(res);
+}
+
+#define AKSIMD_SUB_V4I32(__a__, __b__) vsubq_s32(__a__, __b__)
 //@}
 ////////////////////////////////////////////////////////////////////////
 
@@ -273,6 +282,9 @@ typedef float32x4x4_t	AKSIMD_V4F32X4;
 #define AKSIMD_SHUFFLE_V4F32( a, b, zyxw ) \
 	_AKSIMD_LOCAL::SHUFFLE_V4F32< zyxw >( a, b )
 
+/// Barrel-shift all floats by one.
+#define AKSIMD_SHUFFLE_BCDA( __a__ ) AKSIMD_SHUFFLE_V4F32( (__a__), (__a__), AKSIMD_SHUFFLE(0,3,2,1))
+	
 // Various combinations of zyxw for _AKSIMD_LOCAL::SHUFFLE_V4F32< zyxw > are
 // implemented in a separate header file to keep this one cleaner:
 #include <AK/SoundEngine/Platforms/arm_neon/AkSimdShuffle.h>
@@ -348,6 +360,9 @@ inline AKSIMD_V4F32 AKSIMD_MOVELH_V4F32( const AKSIMD_V4F32& xyzw, const AKSIMD_
 /// Adds the four integers of a and b
 #define AKSIMD_ADD_V4I32( __a__, __b__ ) vaddq_s32( (__a__), (__b__) )
 
+/// Multiplies the 4 low-parts of both operand into the 4 32-bit integers (no overflow)
+#define AKSIMD_MULLO16_V4I32( __a__, __b__ ) vmulq_s32(__a__, __b__)
+
 /// Compare the content of four single-precision, floating-point values of
 /// a and b
 #define AKSIMD_COMP_V4F32( __a__, __b__ ) vceqq_f32( (__a__), (__b__) )
@@ -395,22 +410,18 @@ AkForceInline AKSIMD_V4F32 AKSIMD_DIV_V4F32( AKSIMD_V4F32 a, AKSIMD_V4F32 b )
 	vmulq_f32( (__a__), vsetq_lane_f32( AKSIMD_GETELEMENT_V4F32( (__b__), 0 ), AKSIMD_SETZERO_V4F32(), 0 ) )
 
 /// Vector multiply-add operation.
-#define AKSIMD_MADD_V4F32( __a__, __b__, __c__ ) \
-	AKSIMD_ADD_V4F32( AKSIMD_MUL_V4F32( (__a__), (__b__) ), (__c__) )
+#define AKSIMD_MADD_V4F32( __a__, __b__, __c__ ) vmlaq_f32( (__c__), (__a__), (__b__) )
 
+/// Vector multiply-substract operation.  Careful: vmlsq_f32 does c-(a*b) and not the expected (a*b)-c
 #define AKSIMD_MSUB_V4F32( __a__, __b__, __c__ ) \
 	AKSIMD_SUB_V4F32( AKSIMD_MUL_V4F32( (__a__), (__b__) ), (__c__) )
+
 
 #define AKSIMD_MADD_V2F32( __a__, __b__, __c__ ) \
 	AKSIMD_ADD_V2F32( AKSIMD_MUL_V2F32( (__a__), (__b__) ), (__c__) )
 
 #define AKSIMD_MSUB_V2F32( __a__, __b__, __c__ ) \
 	AKSIMD_SUB_V2F32( AKSIMD_MUL_V2F32( (__a__), (__b__) ), (__c__) )
-
-#define AKSIMD_MADD_V4F32_INST( __a__, __b__, __c__ ) vmlaq_f32( (__c__), (__a__), (__b__) )
-#define AKSIMD_MADD_V2F32_INST( __a__, __b__, __c__ ) vmla_f32( (__c__), (__a__), (__b__) )
-//#define AKSIMD_MSUB_V4F32( __a__, __b__, __c__ ) vmlsq_f32( (__c__), (__a__), (__b__) )
-//#define AKSIMD_MSUB_V2F32( __a__, __b__, __c__ ) vmls_f32( (__c__), (__a__), (__b__) )
 
 #define AKSIMD_MADD_V4F32_SCALAR( __a__, __b__, __c__ ) vmlaq_n_f32( (__c__), (__a__), (__b__) )
 #define AKSIMD_MADD_V2F32_SCALAR( __a__, __b__, __c__ ) vmla_n_f32( (__c__), (__a__), (__b__) )
@@ -451,9 +462,9 @@ AkForceInline AKSIMD_V4F32 AKSIMD_MADD_SS_V4F32( const AKSIMD_V4F32& __a__, cons
 #define AKSIMD_SQRT_V2F32( __vec__ ) vrecpe_f32( vrsqrte_f32( __vec__ ) )
 
 /// Faked in-place vector horizontal add. 
-/// \akwarning 
+/// \akwarning
 /// Don't expect this to be very efficient. 
-/// /endakwarning
+/// \endakwarning
 static AkForceInline void AKSIMD_HORIZONTALADD( AKSIMD_V4F32 & vVec )
 {   
 	AKSIMD_V4F32 vHighLow = AKSIMD_MOVEHL_V4F32(vVec, vVec);
@@ -464,7 +475,7 @@ static AkForceInline void AKSIMD_HORIZONTALADD( AKSIMD_V4F32 & vVec )
 
 /// Cross-platform SIMD multiplication of 2 complex data elements with interleaved real and imaginary parts
 
-#if defined(AK_IOS) || defined(AK_VITA)
+#if defined(AK_IOS)
 
 // V2 implementation (faster 'cause ARM processors actually have an x2 pipeline)
 
@@ -591,6 +602,15 @@ AkForceInline AKSIMD_V4I32 AKSIMD_PACKS_V4I32( const AKSIMD_V4I32& in_vec1, cons
 /// Compare each float element and return control mask.
 #define AKSIMD_GTEQ_V4F32( __a__, __b__ ) vcgeq_f32( (__a__), (__b__))
 
+/// Compare each float element and return control mask.
+#define AKSIMD_GT_V4F32( __a__, __b__ ) vcgtq_f32( (__a__), (__b__))
+
+/// Compare each float element and return control mask.
+#define AKSIMD_LTEQ_V4F32( __a__, __b__ ) vcleq_f32( (__a__), (__b__))
+
+/// Compare each float element and return control mask.
+#define AKSIMD_LT_V4F32( __a__, __b__ ) vcltq_f32( (__a__), (__b__))
+
 /// Compare each integer element and return control mask.
 #define AKSIMD_GTEQ_V4I32( __a__, __b__ ) vcgeq_s32( (__a__), (__b__))
 
@@ -604,12 +624,36 @@ AkForceInline AKSIMD_V4I32 AKSIMD_PACKS_V4I32( const AKSIMD_V4I32& in_vec1, cons
 #define AKSIMD_VSEL_V4F32( __a__, __b__, __c__ ) vbslq_f32( (__c__), (__b__), (__a__) )
 
 // (cond1 >= cond2) ? b : a.
-#define AKSIMD_SEL_GTEQ_V4F32( __a__, __b__, __cond1__, __cond2__ ) AKSIMD_VSEL_V4F32( __a__, __b__, AKSIMD_GTEQ_V4F32( __cond1__, __cond2__ ) )
+#define AKSIMD_SEL_GTEQ_V4F32( __a__, __b__, __cond1__, __cond2__ ) AKSIMD_VSEL_V4F32( __a__, __b__, vcgeq_f32( __cond1__, __cond2__ ) )
 
 // a >= 0 ? b : c ... Written, like, you know, the normal C++ operator syntax.
-#define AKSIMD_SEL_GTEZ_V4F32( __a__, __b__, __c__ ) AKSIMD_VSEL_V4F32( (__c__), (__b__), AKSIMD_GTEQ_V4F32( __a__, AKSIMD_SETZERO_V4F32() ) )
+#define AKSIMD_SEL_GTEZ_V4F32( __a__, __b__, __c__ ) AKSIMD_VSEL_V4F32( (__c__), (__b__), vcgeq_f32( __a__, AKSIMD_SETZERO_V4F32() ) )
 
 #define AKSIMD_SPLAT_V4F32(var, idx) vmovq_n_f32(vgetq_lane_f32(var, idx))
+
+static AkForceInline int AKSIMD_MASK_V4F32( const AKSIMD_V4UI32& in_vec1 )
+{
+#ifdef AKSIMD_DECLARE_V4F32
+	static const AKSIMD_DECLARE_V4I32(movemask, 1, 2, 4, 8);
+	static const AKSIMD_DECLARE_V4I32(highbit, 0x80000000, 0x80000000, 0x80000000, 0x80000000);
+#else
+	static const uint32x4_t movemask = { 1, 2, 4, 8 };
+	static const uint32x4_t highbit = { 0x80000000, 0x80000000, 0x80000000, 0x80000000 };
+#endif
+
+	uint32x4_t t0 = in_vec1;
+	uint32x4_t t1 = vtstq_u32(t0, highbit);
+	uint32x4_t t2 = vandq_u32(t1, movemask);
+	uint32x2_t t3 = vorr_u32(vget_low_u32(t2), vget_high_u32(t2));
+	return vget_lane_u32(t3, 0) | vget_lane_u32(t3, 1);
+}
+
+#ifndef AK_WIN
+static AkForceInline int AKSIMD_MASK_V4F32( const AKSIMD_V4F32& in_vec1 )
+{
+	return AKSIMD_MASK_V4F32( vreinterpretq_u32_f32(in_vec1) );
+}
+#endif
 
 //@}
 ////////////////////////////////////////////////////////////////////////

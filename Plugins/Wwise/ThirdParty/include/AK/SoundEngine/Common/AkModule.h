@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 /// \file 
@@ -37,8 +37,14 @@ the specific language governing permissions and limitations under the License.
 /// Memory Manager's initialization settings.
 /// \sa AK::MemoryMgr
 struct AkMemSettings
-{
-    AkUInt32 uMaxNumPools;              ///< Maximum number of memory pools.
+{	
+	AkMemSettings()
+	{
+		uMaxNumPools = 32;				// Default number of pools.
+		uDebugFlags = 0;
+	}
+    AkUInt32 uMaxNumPools;              ///< Maximum number of memory pools.  32 by default, increase as needed.
+	AkUInt32 uDebugFlags;				///< Debug flags from AK::MemoryMgr::DebugFlags enum.  Should be 0.  This flag is ignored when not in DEBUG.  Memory usage will be higher when this debug tool is enabled.
 };
 //@}
 

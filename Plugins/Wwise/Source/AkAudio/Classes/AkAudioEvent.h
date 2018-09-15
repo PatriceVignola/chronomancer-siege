@@ -5,6 +5,7 @@
 =============================================================================*/
 #pragma once
 
+#include "Engine/GameEngine.h"
 #include "AkAudioEvent.generated.h"
 
 /*------------------------------------------------------------------------------------
@@ -24,12 +25,19 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="AkAudioEvent")
 	float MaxAttenuationRadius;
 
-#if CPP
-	/**
-	 * Called after load process is complete.
-	 */
-	virtual void PostLoad() override;
+	/** Whether this event is infinite (looping) or finite (duration parameters are valid) */
+	UPROPERTY(BlueprintReadOnly, Category = "AkAudioEvent")
+	bool IsInfinite;
 
+	/** Minimum duration */
+	UPROPERTY(BlueprintReadOnly, Category = "AkAudioEvent")
+	float MinimumDuration;
+
+	/** Maximum duration */
+	UPROPERTY(BlueprintReadOnly, Category = "AkAudioEvent")
+	float MaximumDuration;
+
+#if CPP
 	/**
 	 * Load the required bank.
 	 *

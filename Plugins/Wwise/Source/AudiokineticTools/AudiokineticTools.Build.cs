@@ -4,14 +4,20 @@ using UnrealBuildTool;
 
 public class AudiokineticTools : ModuleRules
 {
+#if WITH_FORWARDED_MODULE_RULES_CTOR
+    public AudiokineticTools(ReadOnlyTargetRules Target) : base(Target)
+#else
     public AudiokineticTools(TargetInfo Target)
-	{
+#endif
+    {
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PrivateIncludePaths.Add("AudiokineticTools/Private");
         PrivateIncludePathModuleNames.AddRange(
             new string[]
             {
                 "TargetPlatform",
                 "MainFrame",
+				"MovieSceneTools",
                 "LevelEditor"
             });
 
@@ -41,10 +47,18 @@ public class AudiokineticTools : ModuleRules
 				"WorkspaceMenuStructure",
 				"DirectoryWatcher",
                 "Projects",
+				"Sequencer",
                 "PropertyEditor"
             });
 
-        CircularlyReferencedDependentModules.Add("AkAudio");
-
+        PrivateDependencyModuleNames.AddRange(
+            new string[]
+            {
+				"MovieScene",
+				"MovieSceneTools",
+				"MovieSceneTracks",
+				"MatineeToLevelSequence",
+                "RenderCore"
+			});
 	}
 }

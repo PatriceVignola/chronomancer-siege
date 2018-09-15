@@ -21,26 +21,19 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 #ifndef _AK_MODULATOR_PROCESS_H_
 #define _AK_MODULATOR_PROCESS_H_
 
 #include "AkModulatorParams.h"
-#ifdef AK_PS3
-	#include <AK/Plugin/PluginServices/PS3/MultiCoreServices.h>
-#endif
 
 class CAkEnvelopeProcess
 {
 public:
 	inline static void Process(const AkModulatorParams& in_Params, AkUInt32 in_uSamples, AkModulatorOutput& out_pOutput, AkReal32* out_pOutputBuffer);
-
-#ifdef AK_PS3
-	static AK::MultiCoreServices::BinData JobBin;
-#endif
 
 private:
 	template< typename tPolicy >
@@ -52,10 +45,16 @@ class CAkLFOProcess
 public:
 	inline static void Process(const AkModulatorParams& in_Params, AkUInt32 in_uSamples, AkModulatorOutput& out_pOutput, AkReal32* out_pOutputBuffer);
 
-#ifdef AK_PS3
-	static AK::MultiCoreServices::BinData JobBin;
-#endif
+};
 
+class CAkTimeModProcess
+{
+public:
+	inline static void Process(const AkModulatorParams& in_Params, AkUInt32 in_uSamples, AkModulatorOutput& out_pOutput, AkReal32* out_pOutputBuffer);
+
+private:
+	template< typename tPolicy >
+	inline static void _Process(const AkModulatorParams& in_Params, AkUInt32 in_uFrameSize, AkModulatorOutput& out_pOutput, AkReal32* out_pOutputBuffer );
 };
 
 inline void CAkLFOProcess::Process(const AkModulatorParams& in_Params, const AkUInt32 in_uFrameSize, AkModulatorOutput& out_pOutput, AkReal32* out_pOutputBuffer)
@@ -376,6 +375,48 @@ inline void CAkEnvelopeProcess::Process(const AkModulatorParams& in_Params, cons
 		_Process<SingleOutputPolicy>(in_Params, in_uFrameSize, out_pOutput, out_pOutputBuffer );
 	else
 		_Process<BufferOutputPolicy>(in_Params, in_uFrameSize, out_pOutput, out_pOutputBuffer );
+}
+
+template< typename tPolicy >
+inline void CAkTimeModProcess::_Process(const AkModulatorParams& in_Params, const AkUInt32 in_uFrameSize, AkModulatorOutput& out_pOutput, AkReal32* out_pOutputBuffer)
+{
+	const AkTimeModParams& params = (const AkTimeModParams&)in_Params;
+
+	ValidateState(params.m_eState);
+	out_pOutput.m_eNextState = AkModulatorState_Invalid;
+	out_pOutput.m_fPeak = 0.0;
+	AkUInt32 uCurrentFrame = in_Params.m_uElapsedFrames;
+
+	AkReal32* pBuffer = out_pOutputBuffer;
+
+	const AkUInt32 utotalFrames = params.m_uDuration;
+	const AkUInt32 uloopFrames = params.m_uLoopsDuration;
+	if (uCurrentFrame > utotalFrames)
+	{
+		if (uCurrentFrame < uloopFrames)
+			uCurrentFrame = uCurrentFrame % utotalFrames;
+	}
+	AkReal32 fValue = (AkReal32)AkTimeConv::SamplesToSeconds(uCurrentFrame);
+	AkReal32 finalValue = (AkReal32)AkTimeConv::SamplesToSeconds(utotalFrames);
+	fValue = AkMin(fValue, finalValue);
+	if (uCurrentFrame < in_Params.m_uReleaseFrame)
+		tPolicy::Set(pBuffer, in_uFrameSize, fValue, out_pOutput.m_fPeak);
+	else
+	{
+		// avoid a spike at end by specifying to use the last value
+		fValue = tPolicy::Set(pBuffer, in_uFrameSize, finalValue, out_pOutput.m_fPeak);
+		out_pOutput.m_eNextState = AkModulatorState_Finished;
+	}
+	out_pOutput.m_fOutput = fValue;
+
+}
+
+inline void CAkTimeModProcess::Process(const AkModulatorParams& in_Params, const AkUInt32 in_uFrameSize, AkModulatorOutput& out_pOutput, AkReal32* out_pOutputBuffer)
+{
+	if (in_Params.m_uBufferSize == 0)
+		_Process<SingleOutputPolicy>(in_Params, in_uFrameSize, out_pOutput, out_pOutputBuffer);
+	else
+		_Process<BufferOutputPolicy>(in_Params, in_uFrameSize, out_pOutput, out_pOutputBuffer);
 }
 
 #endif

@@ -4,8 +4,8 @@
 	AkEvent.cpp:
 =============================================================================*/
 
-#include "AkAudioDevice.h"
 #include "AkAudioEvent.h"
+#include "AkAudioDevice.h"
 #include "AkAudioBank.h"
 
 /**
@@ -18,14 +18,6 @@ UAkAudioEvent::UAkAudioEvent(const class FObjectInitializer& ObjectInitializer)
 {
 	// Properties
 	RequiredBank = NULL;
-}
-
-/**
- * Called after load process is complete.
- */
-void UAkAudioEvent::PostLoad()
-{
-	Super::PostLoad();
 }
 
 /**

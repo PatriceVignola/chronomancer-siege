@@ -4,6 +4,9 @@
 	AkBank.h:
 =============================================================================*/
 #pragma once
+
+#include "Engine/GameEngine.h"
+#include "AkGameplayTypes.h"
 #include "AkAudioBank.generated.h"
 
 /*------------------------------------------------------------------------------------
@@ -19,39 +22,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Behaviour)
 	bool	AutoLoad;
 	
-	/**
-	 * Loads an AkBank.
-	 *
-	 * @return Returns true if the laod was successful, otherwise false
-	 */
-	//UFUNCTION(KismetCallable, meta(K2Protected = "true", K2Category = "Audiokinetic"))
-	//bool Load();
-	
-	/**
-	 * Loads an AkBank asynchronously.
-	 *
-	 * @param in_pfnBankCallback		Function to call on completion
-	 * @param in_pCookie				Cookie to pass in callback
-	 * @return Returns true if the laod was successful, otherwise false
-	 */
-	//UFUNCTION(KismetCallable, meta(K2Protected = "true", K2Category = "Audiokinetic"))
-	//bool LoadAsync(void* in_pfnBankCallback, void* in_pCookie);
-	
-	/**
-	 * Unloads an AkBank.
-	 */
-	//UFUNCTION(KismetCallable, meta(K2Protected = "true", K2Category = "Audiokinetic"))
-	//void Unload();
-	
-	/**
-	 * Unloads an AkBank asynchronously.
-	 *
-	 * @param in_pfnBankCallback		Function to call on completion
-	 * @param in_pCookie				Cookie to pass in callback
-	 */
-	//UFUNCTION(KismetCallable, meta(K2Protected = "true", K2Category = "Audiokinetic"))
-	//void UnloadAsync(void* in_pfnBankCallback, void* in_pCookie);
-
 #if CPP
 	/**
 	 * Called after load process is complete.
@@ -71,6 +41,11 @@ public:
 	bool Load();
 
 	/**
+	* Loads an AkBank, using the latent action to flag completion.
+	*/
+	bool Load(FWaitEndBankAction* LoadBankLatentAction);
+
+	/**
 	 * Loads an AkBank asynchronously.
 	 *
 	 * @param in_pfnBankCallback		Function to call on completion
@@ -78,11 +53,24 @@ public:
 	 * @return Returns true if the load was successful, otherwise false
 	 */
 	bool LoadAsync(void* in_pfnBankCallback, void* in_pCookie);
+
+	/**
+	* Loads an AkBank asynchronously, from Blueprint
+	*
+	* @param BankLoadedCallback		Blueprint Delegate to call on completion
+	* @return Returns true if the load was successful, otherwise false
+	*/
+	bool LoadAsync(const FOnAkBankCallback& BankLoadedCallback);
 	
 	/**
 	 * Unloads an AkBank.
 	 */
 	void Unload();
+
+	/**
+	* Unloads an AkBank, using the latent action to flag completion.
+	*/
+	void Unload(FWaitEndBankAction* LoadBankLatentAction);
 		
 	/**
 	 * Unloads an AkBank asynchronously.
@@ -91,5 +79,12 @@ public:
 	 * @param in_pCookie				Cookie to pass in callback
 	 */
 	void UnloadAsync(void* in_pfnBankCallback, void* in_pCookie);
+
+	/**
+	* Unloads an AkBank asynchronously, from Blueprint
+	*
+	* @param BankUnloadedCallback		Blueprint Delegate to call on completion
+	*/
+	void UnloadAsync(const FOnAkBankCallback& BankUnloadedCallback);
 #endif
 };

@@ -4,15 +4,28 @@
 	SGenerateSoundBanks.cpp
 ------------------------------------------------------------------------------------*/
 
-#include "AudiokineticToolsPrivatePCH.h"
+#include "SGenerateSoundBanks.h"
 #include "AkAudioClasses.h"
 #include "AkAudioDevice.h"
-#include "SGenerateSoundBanks.h"
 #include "AkAudioBankGenerationHelpers.h"
 #include "AssetRegistryModule.h"
-#include "TargetPlatform.h"
-#include "IProjectManager.h"
-#include "JsonObject.h"
+#include "Interfaces/IProjectManager.h"
+#include "Dom/JsonObject.h"
+#include "Interfaces/ITargetPlatformManagerModule.h"
+#include "Interfaces/ITargetPlatform.h"
+#include "Dialogs/Dialogs.h"
+#include "EditorStyleSet.h"
+#include "Widgets/Input/SButton.h"
+#include "Framework/Application/SlateApplication.h"
+#include "GenericPlatform/GenericPlatformFile.h"
+#include "HAL/PlatformFileManager.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+
+#include "Misc/FileHelper.h"
+#include "Misc/MessageDialog.h"
+
+#include "ProjectDescriptor.h"
 
 #define LOCTEXT_NAMESPACE "AkAudio"
 DEFINE_LOG_CATEGORY_STATIC(LogAkBanks, Log, All);
@@ -140,6 +153,8 @@ void SGenerateSoundBanks::Construct(const FArguments& InArgs, TArray<TWeakObject
 
 }
 
+void SGenerateSoundBanks::SetShouldSaveWwiseProject(bool in_bShouldSaveBeforeGeneration) { m_bShouldSaveWwiseProject = in_bShouldSaveBeforeGeneration; }
+
 void SGenerateSoundBanks::PopulateList(void)
 {
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
@@ -195,10 +210,14 @@ void SGenerateSoundBanks::GetWwisePlatforms()
 	AddPlatformIfSupported(SupportedPlatforms, TEXT("Android"), TEXT("Android"));
 	AddPlatformIfSupported(SupportedPlatforms, TEXT("IOS"), TEXT("IOS"));
 	AddPlatformIfSupported(SupportedPlatforms, TEXT("LinuxNoEditor"), TEXT("Linux"));
+#if UE_4_20_OR_LATER
+	AddPlatformIfSupported(SupportedPlatforms, TEXT("Lumin"), TEXT("Lumin"));
+#endif
 	AddPlatformIfSupported(SupportedPlatforms, TEXT("MacNoEditor"), TEXT("Mac"));
 	AddPlatformIfSupported(SupportedPlatforms, TEXT("PS4"), TEXT("PS4"));
 	AddPlatformIfSupported(SupportedPlatforms, TEXT("WindowsNoEditor"), TEXT("Windows"));
 	AddPlatformIfSupported(SupportedPlatforms, TEXT("XboxOne"), TEXT("XboxOne"));
+	AddPlatformIfSupported(SupportedPlatforms, TEXT("Switch"), TEXT("Switch"));
 }
 
 FReply SGenerateSoundBanks::OnKeyDown( const FGeometry& MyGeometry, const FKeyEvent& InKeyboardEvent )
@@ -237,76 +256,35 @@ FReply SGenerateSoundBanks::OnGenerateButtonClicked()
 	}
 
 	TMap<FString, TSet<UAkAudioEvent*> > BankToEventSet;
-	TMap<FString, TSet<UAkAuxBus*> > BankToAuxBusSet;
-	{
-		// Force load of event assets to make sure definition file is complete
-		FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-		TArray<FAssetData> EventAssets;
-		AssetRegistryModule.Get().GetAssetsByClass(UAkAudioEvent::StaticClass()->GetFName(), EventAssets);
-
-		for (int32 AssetIndex = 0; AssetIndex < EventAssets.Num(); ++AssetIndex)
-		{
-			FString EventAssetPath = EventAssets[AssetIndex].ObjectPath.ToString();
-			UAkAudioEvent * pEvent = LoadObject<UAkAudioEvent>(NULL, *EventAssetPath, NULL, 0, NULL);
-			if (BanksToGenerate.ContainsByPredicate([&](TSharedPtr<FString> Bank) { 
-				if (pEvent->RequiredBank)
-				{
-					return pEvent->RequiredBank->GetName() == *Bank;
-				}
-				return false;
-			
-			}))
-			{
-				if (pEvent->RequiredBank)
-				{
-					TSet<UAkAudioEvent*>& EventPtrSet = BankToEventSet.FindOrAdd(pEvent->RequiredBank->GetName());
-					EventPtrSet.Add(pEvent);
-				}
-			}
-		}
-
-		// Force load of AuxBus assets to make sure definition file is complete
-		TArray<FAssetData> AuxBusAssets;
-		AssetRegistryModule.Get().GetAssetsByClass(UAkAuxBus::StaticClass()->GetFName(), AuxBusAssets);
-
-		for (int32 AssetIndex = 0; AssetIndex < AuxBusAssets.Num(); ++AssetIndex)
-		{
-			FString AuxBusAssetPath = AuxBusAssets[AssetIndex].ObjectPath.ToString();
-			UAkAuxBus * pAuxBus = LoadObject<UAkAuxBus>(NULL, *AuxBusAssetPath, NULL, 0, NULL);
-			if (BanksToGenerate.ContainsByPredicate([&](TSharedPtr<FString> Bank) { 
-				if (pAuxBus->RequiredBank)
-				{
-					return pAuxBus->RequiredBank->GetName() == *Bank;
-				}
-				return false;
-			}))
-			{
-				if (pAuxBus->RequiredBank)
-				{
-					TSet<UAkAuxBus*>& EventPtrSet = BankToAuxBusSet.FindOrAdd(pAuxBus->RequiredBank->GetName());
-					EventPtrSet.Add(pAuxBus);
-				}
-			}
-		}
-	}
-	
-	FString DefFileContent = WwiseBnkGenHelper::DumpBankContentString(BankToEventSet);
-	DefFileContent += WwiseBnkGenHelper::DumpBankContentString(BankToAuxBusSet);
-	bool SuccesfulDump = FFileHelper::SaveStringToFile(DefFileContent, *WwiseBnkGenHelper::GetDefaultSBDefinitionFilePath());
+	bool SuccesfulDump = WwiseBnkGenHelper::GenerateDefinitionFile(BanksToGenerate, BankToEventSet);
 	if( SuccesfulDump )
 	{
-		int32 ReturnCode = WwiseBnkGenHelper::GenerateSoundBanks( BanksToGenerate, PlatformsToGenerate, BankToEventSet.Num() > 0 );
+        /* We only save the wwise project when banks are generated from sequencer, since it would be a very big behavior change to save every time from the main UE toolbar. */
+        if (m_bShouldSaveWwiseProject)
+        {
+            /* If we have an open connection to Authoring via WAAPI, save the project first and wait until it is not dirty before generating sounbanks */
+            FAkWaapiClient* pWaapiClient = FAkWaapiClient::Get();
+            if (pWaapiClient != nullptr)
+            {
+                FAkWaapiClient::SaveProject();
+                bool bProjectDirty = true;
+                while (bProjectDirty)
+                {
+                    bProjectDirty = FAkWaapiClient::IsProjectDirty();
+                }
+            }
+        }
+
+		int32 ReturnCode = WwiseBnkGenHelper::GenerateSoundBanks( BanksToGenerate, PlatformsToGenerate );
 
 		if ( ReturnCode == 0 || ReturnCode == 2 )
 		{
-			FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-			if ( AudioDevice )
-			{
-				AudioDevice->ReloadAllReferencedBanks();
-			}
-
-			FetchAttenuationInfo(BankToEventSet);
-
+            FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
+            if (AudioDevice)
+            {
+                AudioDevice->ReloadAllReferencedBanks();
+            }
+			WwiseBnkGenHelper::FetchAttenuationInfo(BankToEventSet);
 			TSharedPtr<SWindow> ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
 			ParentWindow->RequestDestroyWindow();
 		}
@@ -321,117 +299,6 @@ FReply SGenerateSoundBanks::OnGenerateButtonClicked()
 	}
 
 	return FReply::Handled();
-}
-
-// Gets most recently modified JSON SoundBank metadata file
-struct BankNameToPath : private IPlatformFile::FDirectoryVisitor
-{
-	FString BankPath;
-
-	BankNameToPath(const FString& BankName, const TCHAR* BaseDirectory, IPlatformFile& PlatformFile)
-		: BankName(BankName), PlatformFile(PlatformFile)
-	{
-		Visit(BaseDirectory, true);
-		PlatformFile.IterateDirectory(BaseDirectory, *this);
-	}
-
-	bool IsValid() const { return StatData.bIsValid; }
-
-private:
-	virtual bool Visit(const TCHAR* FilenameOrDirectory, bool bIsDirectory) override
-	{
-		if (bIsDirectory)
-		{
-			FString NewBankPath = FilenameOrDirectory;
-			NewBankPath += TEXT("\\");
-			NewBankPath += BankName + TEXT(".json");
-
-			FFileStatData NewStatData = PlatformFile.GetStatData(*NewBankPath);
-			if (NewStatData.bIsValid && !NewStatData.bIsDirectory)
-			{
-				if (!StatData.bIsValid || NewStatData.ModificationTime > StatData.ModificationTime)
-				{
-					StatData = NewStatData;
-					BankPath = NewBankPath;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	const FString& BankName;
-	IPlatformFile& PlatformFile;
-	FFileStatData StatData;
-};
-
-bool SGenerateSoundBanks::FetchAttenuationInfo(const TMap<FString, TSet<UAkAudioEvent*> >& BankToEventSet)
-{
-	FString PlatformName = GetTargetPlatformManagerRef().GetRunningTargetPlatform()->PlatformName();
-	FString BankBasePath = WwiseBnkGenHelper::GetBankGenerationFullDirectory(*PlatformName);
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	const TCHAR* BaseDirectory = *BankBasePath;
-
-	FString FileContents; // cache the file contents - in case we are opening large files
-
-	for (TMap<FString, TSet<UAkAudioEvent*> >::TConstIterator BankIt(BankToEventSet); BankIt; ++BankIt)
-	{
-		FString BankName = BankIt.Key();
-		BankNameToPath NameToPath(BankName, BaseDirectory, PlatformFile);
-
-		if (NameToPath.IsValid())
-		{
-			const TCHAR* BankPath = *NameToPath.BankPath;
-			const TSet<UAkAudioEvent*>& EventsInBank = BankIt.Value();
-
-			FileContents.Reset();
-			if (!FFileHelper::LoadFileToString(FileContents, BankPath))
-			{
-				UE_LOG(LogAkBanks, Warning, TEXT("Failed to load file contents of JSON SoundBank metadata file: %s"), BankPath);
-				continue;
-			}
-
-			TSharedPtr< FJsonObject > JsonObject;
-			TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(FileContents);
-
-			if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
-			{
-				UE_LOG(LogAkBanks, Warning, TEXT("Unable to parse JSON SoundBank metadata file: %s"), BankPath);
-				continue;
-			}
-
-			TArray< TSharedPtr<FJsonValue> > SoundBanks = JsonObject->GetObjectField("SoundBanksInfo")->GetArrayField("SoundBanks");
-			TSharedPtr<FJsonObject> Obj = SoundBanks[0]->AsObject();
-			TArray< TSharedPtr<FJsonValue> > Events = Obj->GetArrayField("IncludedEvents");
-
-			for (int i = 0; i < Events.Num(); i++)
-			{
-				TSharedPtr<FJsonObject> EventObj = Events[i]->AsObject();
-				FString EventRadiusStr;
-				if (EventObj->TryGetStringField("MaxAttenuation", EventRadiusStr))
-				{
-					float EventRadius = FCString::Atof(*EventRadiusStr);
-					FString EventName = EventObj->GetStringField("Name");
-
-					for (TSet<UAkAudioEvent*>::TConstIterator EventIt(EventsInBank); EventIt; ++EventIt)
-					{
-						UAkAudioEvent* Event = *EventIt;
-						if (Event->GetName() == EventName)
-						{
-							if (Event->MaxAttenuationRadius != EventRadius)
-							{
-								Event->MaxAttenuationRadius = EventRadius;
-								Event->Modify(true);
-							}
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return true;
 }
 
 TSharedRef<ITableRow> SGenerateSoundBanks::MakeBankListItemWidget(TSharedPtr<FString> Bank, const TSharedRef<STableViewBase>& OwnerTable)

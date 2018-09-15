@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 // AkSpeakerVolumes.h
@@ -39,29 +39,7 @@ the specific language governing permissions and limitations under the License.
 
 #include <AK/SoundEngine/Common/AkTypes.h>
 #include <AK/Tools/Common/AkPlatformFuncs.h>
-
-// Multi-channel volumes/mix.
-// ------------------------------------------------
-
-// Platform-specific section.
-//----------------------------------------------------------------------------------------------------
-
-#if defined( AK_XBOX360 )
-
-	#include <AK/SoundEngine/Platforms/XBox360/AkSpeakerVolumes.h>
-
-#elif defined (AK_PS3)
-
-	#include <AK/SoundEngine/Platforms/PS3/AkSpeakerVolumes.h>
-	
-#else
-
-	#include <AK/SoundEngine/Platforms/Generic/AkSpeakerVolumes.h>
-
-#endif
-
-// Cross-platform section.
-//----------------------------------------------------------------------------------------------------
+#include <AK/SoundEngine/Platforms/Generic/AkSpeakerVolumes.h>
 
 namespace AK
 {
@@ -245,6 +223,17 @@ namespace SpeakerVolumes
 				in_pVolumesDst[uChan] += in_pVolumesSrc[uChan];
 			}
 		}
+
+		/// Pointwise Multiply-Add of all elements of two volume matrices.
+		AkForceInline void MAdd(MatrixPtr in_pVolumesDst, ConstMatrixPtr in_pVolumesSrc, AkUInt32 in_uNumChannelsIn, AkUInt32 in_uNumChannelsOut, AkReal32 in_fGain)
+		{
+			AkUInt32 uNumElements = Matrix::GetNumElements(in_uNumChannelsIn, in_uNumChannelsOut);
+			AKASSERT((in_pVolumesDst && in_pVolumesSrc) || uNumElements == 0);
+			for (AkUInt32 uChan = 0; uChan < uNumElements; uChan++)
+			{
+				in_pVolumesDst[uChan] += in_pVolumesSrc[uChan] * in_fGain;
+			}
+		}
 		
 		/// Get absolute max for all elements of two volume matrices, independently.
 		AkForceInline void AbsMax(MatrixPtr in_pVolumesDst, ConstMatrixPtr in_pVolumesSrc, AkUInt32 in_uNumChannelsIn, AkUInt32 in_uNumChannelsOut)
@@ -254,6 +243,17 @@ namespace SpeakerVolumes
 			for ( AkUInt32 uChan = 0; uChan < uNumElements; uChan++ )
 			{
 				in_pVolumesDst[uChan] = ((in_pVolumesDst[uChan] * in_pVolumesDst[uChan]) > (in_pVolumesSrc[uChan] * in_pVolumesSrc[uChan])) ? in_pVolumesDst[uChan] : in_pVolumesSrc[uChan];
+			}
+		}
+
+		/// Get max for all elements of two volume matrices, independently.
+		AkForceInline void Max(MatrixPtr in_pVolumesDst, ConstMatrixPtr in_pVolumesSrc, AkUInt32 in_uNumChannelsIn, AkUInt32 in_uNumChannelsOut)
+		{
+			AkUInt32 uNumElements = Matrix::GetNumElements(in_uNumChannelsIn, in_uNumChannelsOut);
+			AKASSERT((in_pVolumesDst && in_pVolumesSrc) || uNumElements == 0);
+			for (AkUInt32 uChan = 0; uChan < uNumElements; uChan++)
+			{
+				in_pVolumesDst[uChan] = (in_pVolumesDst[uChan] > in_pVolumesSrc[uChan]) ? in_pVolumesDst[uChan] : in_pVolumesSrc[uChan];
 			}
 		}
 	}

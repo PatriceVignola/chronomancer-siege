@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 #ifndef _AK_PLATFORM_FUNCS_H_
@@ -35,10 +35,6 @@ the specific language governing permissions and limitations under the License.
 //#define AK_ENABLE_PERF_RECORDING
 #if defined(AK_ENABLE_PERF_RECORDING)
 #include <stdio.h>
-#endif
-
-#ifdef AK_USE_THREAD_EMULATION
-	#include <AK/Tools/Win32/ThreadEmulation.h>
 #endif
 
 #if defined(_WIN64)
@@ -54,7 +50,11 @@ the specific language governing permissions and limitations under the License.
 struct AkThreadProperties
 {
     int                 nPriority;		///< Thread priority
-    AkUInt32            dwAffinityMask;	///< Affinity mask
+#ifdef AK_WIN_UNIVERSAL_APP
+	PROCESSOR_NUMBER    processorNumber;///< Ideal processor (passed to SetThreadIdealProcessorEx)
+#else
+	AkUInt32            dwAffinityMask;	///< Affinity mask
+#endif
 	AkUInt32			uStackSize;		///< Thread stack size.
 };
 
@@ -77,13 +77,11 @@ namespace AK
 #define AK_GET_THREAD_ROUTINE_PARAMETER_PTR(type) reinterpret_cast<type*>( AK_THREAD_ROUTINE_PARAMETER )
 #define AK_RETURN_THREAD_OK                     0x00000000
 #define AK_RETURN_THREAD_ERROR                  0x00000001
-#if defined AK_CPU_X86_64
-#define AK_DEFAULT_STACK_SIZE					(65536)
-#else
-#define AK_DEFAULT_STACK_SIZE                   (32768)
-#endif
+#define AK_DEFAULT_STACK_SIZE					(64*1024)
 #define AK_THREAD_PRIORITY_NORMAL				THREAD_PRIORITY_NORMAL
 #define AK_THREAD_PRIORITY_ABOVE_NORMAL			THREAD_PRIORITY_ABOVE_NORMAL
+#define AK_THREAD_PRIORITY_TIME_CRITICAL		THREAD_PRIORITY_TIME_CRITICAL
+#define AK_THREAD_MODE_BACKGROUND_BEGIN			THREAD_MODE_BACKGROUND_BEGIN
 
 // NULL objects
 #define AK_NULL_THREAD                          NULL
@@ -108,7 +106,7 @@ namespace AKPLATFORM
 	/// Platform Independent Helper
 	inline AKRESULT AkCreateEvent( AkEvent & out_event )
     {
-#ifdef AK_USE_METRO_API
+#ifdef AK_USE_UWP_API
 		out_event = CreateEventEx(nullptr, nullptr, 0, STANDARD_RIGHTS_ALL|EVENT_MODIFY_STATE);
 #else
 		out_event = ::CreateEvent( NULL,					// No security attributes
@@ -131,7 +129,7 @@ namespace AKPLATFORM
 	/// Platform Independent Helper
 	inline void AkWaitForEvent( AkEvent & in_event )
 	{
-#ifdef AK_USE_METRO_API
+#ifdef AK_USE_UWP_API
 #ifdef AK_ENABLE_ASSERTS
 		DWORD dwWaitResult = 
 #endif // AK_ENABLE_ASSERTS
@@ -220,16 +218,18 @@ namespace AKPLATFORM
 	{
 		out_threadProperties.nPriority = AK_THREAD_PRIORITY_NORMAL;
 		out_threadProperties.uStackSize= AK_DEFAULT_STACK_SIZE;
+#ifdef AK_WIN_UNIVERSAL_APP
+		out_threadProperties.processorNumber.Group = 0;
+		out_threadProperties.processorNumber.Number = MAXIMUM_PROCESSORS;
+		out_threadProperties.processorNumber.Reserved = 0;
+#else
 		out_threadProperties.dwAffinityMask = 0;
+#endif
 	}
 
 	/// Set the name of a thread: see http://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx
 	inline void AkSetThreadName( DWORD in_dwThreadID, LPCSTR in_szThreadName )
 	{
-#if defined AK_USE_THREAD_EMULATION
-		UNREFERENCED_PARAMETER( in_dwThreadID );
-		UNREFERENCED_PARAMETER( in_szThreadName );
-#else
 		const DWORD MS_VC_EXCEPTION=0x406D1388;
 
 #pragma pack(push,8)
@@ -256,7 +256,6 @@ namespace AKPLATFORM
 		__except(EXCEPTION_CONTINUE_EXECUTION)
 		{
 		}
-#endif
 	}
 
 	/// Platform Independent Helper
@@ -269,15 +268,9 @@ namespace AKPLATFORM
     {
 		AKASSERT( out_pThread != NULL );
 		AKASSERT( (in_threadProperties.nPriority >= THREAD_PRIORITY_LOWEST && in_threadProperties.nPriority <= THREAD_PRIORITY_HIGHEST)
-			|| ( in_threadProperties.nPriority == THREAD_PRIORITY_TIME_CRITICAL ) );
+			|| ( in_threadProperties.nPriority == THREAD_PRIORITY_TIME_CRITICAL )
+			|| ( in_threadProperties.nPriority == THREAD_MODE_BACKGROUND_BEGIN ) );
 
-#ifdef AK_USE_THREAD_EMULATION
-		UNREFERENCED_PARAMETER( in_threadProperties );
-		UNREFERENCED_PARAMETER( in_szThreadName );
-       *out_pThread = AK::ThreadEmulation::CreateThread( pStartRoutine,                   // Thread start routine
-                                       pParams,                         // Thread function parameter
-                                       0 );								// Creation flags: create running
-#else
 		DWORD dwThreadID;
         *out_pThread = ::CreateThread( NULL,							// No security attributes
                                        in_threadProperties.uStackSize,	// StackSize (0 uses system default)
@@ -297,19 +290,30 @@ namespace AKPLATFORM
         AkSetThreadName( dwThreadID, in_szThreadName );
 
 		// Set properties.
-		if ( !::SetThreadPriority( *out_pThread, in_threadProperties.nPriority ) )
+		if ( !::SetThreadPriority( *out_pThread, in_threadProperties.nPriority ) &&
+			 in_threadProperties.nPriority != THREAD_MODE_BACKGROUND_BEGIN )
         {
-            AKASSERT( !"Failed setting IO thread priority" );
+            AKASSERT( !"Failed setting thread priority" );
 			AkCloseThread( out_pThread );
             return;
         }
-		if ( in_threadProperties.dwAffinityMask )
+#ifdef AK_WIN_UNIVERSAL_APP
+		if ( in_threadProperties.processorNumber.Number != MAXIMUM_PROCESSORS)
         {
-			if ( !::SetThreadAffinityMask( *out_pThread, in_threadProperties.dwAffinityMask ) )
+			if ( !SetThreadIdealProcessorEx( *out_pThread, const_cast<PPROCESSOR_NUMBER>(&in_threadProperties.processorNumber), NULL) )
             {
-                AKASSERT( !"Failed setting IO thread affinity mask" );
+                AKASSERT( !"Failed setting thread ideal processor" );
 				AkCloseThread( out_pThread );
             }
+		}
+#else
+		if (in_threadProperties.dwAffinityMask)
+		{
+			if (!::SetThreadAffinityMask(*out_pThread, in_threadProperties.dwAffinityMask))
+			{
+				AKASSERT(!"Failed setting thread affinity mask");
+				AkCloseThread(out_pThread);
+			}
 		}
 #endif
 	}
@@ -319,7 +323,7 @@ namespace AKPLATFORM
     {
         AKASSERT( in_pThread );
         AKASSERT( *in_pThread );
-#ifdef AK_USE_METRO_API
+#ifdef AK_USE_UWP_API
         ::WaitForSingleObjectEx( *in_pThread, INFINITE, FALSE );
 #else
         ::WaitForSingleObject( *in_pThread, INFINITE );
@@ -335,11 +339,7 @@ namespace AKPLATFORM
 	/// Platform Independent Helper
     inline void AkSleep( AkUInt32 in_ulMilliseconds )
     {
-#ifdef AK_USE_THREAD_EMULATION
-		AK::ThreadEmulation::Sleep( in_ulMilliseconds );
-#else
 		::Sleep( in_ulMilliseconds );
-#endif
     }
 
 	// Optimized memory functions
@@ -386,12 +386,15 @@ namespace AKPLATFORM
         return ( in_iNow - in_iStart ) / AK::g_fFreqRatio;
     }
 
-	/// String conversion helper
+	/// String conversion helper. If io_pszAnsiString is null, the function returns the required size.
 	inline AkInt32 AkWideCharToChar( const wchar_t*	in_pszUnicodeString,
 									 AkUInt32	in_uiOutBufferSize,
 									 char*	io_pszAnsiString )
 	{
-		int iWritten = ::WideCharToMultiByte(CP_ACP,																	// code page
+		if(!io_pszAnsiString)
+			return WideCharToMultiByte(CP_UTF8, 0, in_pszUnicodeString, -1, NULL, 0, NULL, NULL);
+
+		int iWritten = ::WideCharToMultiByte(CP_UTF8,																	// code page
 									0,																		// performance and mapping flags
 									in_pszUnicodeString,													// wide-character string
 									(int)AkMin( ( (AkUInt32)wcslen( in_pszUnicodeString )), in_uiOutBufferSize-1 ),	// number of chars in string : -1 = NULL terminated string.
@@ -408,7 +411,7 @@ namespace AKPLATFORM
 									 AkUInt32		in_uiOutBufferSize,
 									 void*			io_pvUnicodeStringBuffer )
 	{
-		return ::MultiByteToWideChar(	CP_ACP,								// code page
+		return ::MultiByteToWideChar(	CP_UTF8,							// code page
 										0,									// performance and mapping flags
 										in_pszAnsiString,					// wide-character string
 										-1,									// number of chars in string : -1 = NULL terminated string.
@@ -463,7 +466,7 @@ namespace AKPLATFORM
 	#define AkAlloca( _size_ ) _alloca( _size_ )
 
 	/// Output a debug message on the console
-#if ! ( defined(AK_USE_METRO_API) || defined(AK_OPTIMIZED) )
+#if ! ( defined(AK_USE_UWP_API) || defined(AK_OPTIMIZED) )
 	inline void OutputDebugMsg( const wchar_t* in_pszMsg )
 	{
 		OutputDebugStringW( in_pszMsg );

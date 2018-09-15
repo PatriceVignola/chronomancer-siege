@@ -3,11 +3,10 @@
 /*=============================================================================
 	AssetTypeActions_AkAuxBus.cpp:
 =============================================================================*/
-#include "AudiokineticToolsPrivatePCH.h"
+#include "AssetTypeActions_AkAuxBus.h"
 #include "IAssetTools.h"
 #include "AkAudioClasses.h"
 #include "AkAudioDevice.h"
-#include "AssetTypeActions_AkAuxBus.h"
 #include "AkAudioDevice.h"
 #include "Toolkits/SimpleAssetEditor.h"
 

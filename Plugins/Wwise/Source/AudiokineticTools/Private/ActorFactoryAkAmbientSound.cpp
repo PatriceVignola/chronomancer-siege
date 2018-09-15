@@ -3,10 +3,10 @@
 /*=============================================================================
 	ActorFactoryAkAmbientSound.cpp: 
 =============================================================================*/
-#include "AudiokineticToolsPrivatePCH.h"
 #include "ActorFactoryAkAmbientSound.h"
 #include "AkAudioClasses.h"
 #include "AssetData.h"
+#include "Editor/EditorEngine.h"
 
 #define LOCTEXT_NAMESPACE "ActorFactoryAkAmbientSound"
 

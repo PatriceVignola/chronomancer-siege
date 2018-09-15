@@ -5,7 +5,7 @@
 =============================================================================*/
 #pragma once
 
-#include "ModuleInterface.h"
+#include "Modules/ModuleInterface.h"
 
 /**
  * The public interface of the AudiokineticTools module
@@ -13,4 +13,3 @@
 class IAudiokineticTools : public IModuleInterface
 {
 };
-

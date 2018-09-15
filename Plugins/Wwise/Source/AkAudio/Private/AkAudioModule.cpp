@@ -1,14 +1,23 @@
 // Copyright (c) 2006-2012 Audiokinetic Inc. / All Rights Reserved
 
-#include "AkAudioDevice.h"
 #include "AkAudioModule.h"
+#include "AkAudioDevice.h"
+#include "AkAudioStyle.h"
+#include "AkWaapiClient.h"
+#include "Misc/CoreDelegates.h"
 
 IMPLEMENT_MODULE( FAkAudioModule, AkAudio )
+FAkAudioModule* FAkAudioModule::AkAudioModuleIntance = nullptr;
 
 void FAkAudioModule::StartupModule()
 {
-	AkAudioDevice = new FAkAudioDevice;
+	if (AkAudioModuleIntance)
+	{
+		return;
+	}
 
+	AkAudioModuleIntance = this;
+	AkAudioDevice = new FAkAudioDevice;
 	if (!AkAudioDevice)
 		return;
 
@@ -19,15 +28,17 @@ void FAkAudioModule::StartupModule()
 		return;
 	}
 
-	OnTick = FTickerDelegate::CreateRaw( AkAudioDevice, &FAkAudioDevice::Update);
-	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker( OnTick );
+	OnTick = FTickerDelegate::CreateRaw(AkAudioDevice, &FAkAudioDevice::Update);
+	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker(OnTick);
 
-	FCoreDelegates::OnPreExit.AddLambda([]{FAkAudioDevice::SetEngineExiting(true);});
-
+	FAkWaapiClient::Initialize();
 }
 
 void FAkAudioModule::ShutdownModule()
 {
+	FAkAudioStyle::Shutdown();
+    FAkWaapiClient::DeleteInstance();
+
 	FTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 
 	if (AkAudioDevice) 
@@ -36,6 +47,8 @@ void FAkAudioModule::ShutdownModule()
 		delete AkAudioDevice;
 		AkAudioDevice = NULL;
 	}
+
+	AkAudioModuleIntance = nullptr;
 }
 
 FAkAudioDevice * FAkAudioModule::GetAkAudioDevice()

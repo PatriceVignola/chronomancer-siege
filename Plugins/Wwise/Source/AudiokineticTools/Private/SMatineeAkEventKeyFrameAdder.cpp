@@ -4,12 +4,15 @@
 	SMatineeAkEventKeyFrameAdder.cpp
 ------------------------------------------------------------------------------------*/
 
-#include "AudiokineticToolsPrivatePCH.h"
+#include "SMatineeAkEventKeyFrameAdder.h"
 #include "AkAudioClasses.h"
 #include "AkAudioDevice.h"
 #include "PropertyEditorModule.h"
 #include "PropertyCustomizationHelpers.h"
-#include "SMatineeAkEventKeyFrameAdder.h"
+#include "Widgets/Images/SImage.h"
+#include "Widgets/Text/STextBlock.h"
+#include "Widgets/Input/SEditableTextBox.h"
+#include "AssetData.h"
 
 #define LOCTEXT_NAMESPACE "AkAudio"
 

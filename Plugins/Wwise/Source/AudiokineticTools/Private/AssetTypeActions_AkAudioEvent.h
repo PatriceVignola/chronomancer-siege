@@ -5,6 +5,7 @@
 =============================================================================*/
 #pragma once
 
+#include "AkInclude.h"
 #include "AssetTypeActions_Base.h"
 #include "AkAudioEvent.h"
 
@@ -24,7 +25,6 @@ public:
 	virtual bool CanFilter() override { return true; }
 	virtual uint32 GetCategories() override { return MyAssetCategory; }
 	virtual bool ShouldForceWorldCentric() { return true; }
-	virtual void PerformAssetDiff(UObject* OldAsset, UObject* NewAsset, const struct FRevisionInfo& OldRevision, const struct FRevisionInfo& NewRevision) const {}
 	virtual class UThumbnailInfo* GetThumbnailInfo(UObject* Asset) const override { return NULL; };
 
 	// Critical section for accessing the m_PlayingAkEvents map

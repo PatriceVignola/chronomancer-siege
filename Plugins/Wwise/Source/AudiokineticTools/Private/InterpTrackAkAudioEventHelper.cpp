@@ -3,13 +3,21 @@
 /*=============================================================================
 	InterpTrackAkEventHelper.cpp: 
 =============================================================================*/
-#include "AudiokineticToolsPrivatePCH.h"
+#include "InterpTrackAkAudioEventHelper.h"
 #include "MatineeModule.h"
 #include "MatineeClasses.h"
-#include "InterpTrackAkAudioEventHelper.h"
 #include "AkAudioClasses.h"
 #include "PropertyCustomizationHelpers.h"
 #include "SMatineeAkEventKeyFrameAdder.h"
+#include "EditorModeInterpolation.h"
+#include "EditorModeManager.h"
+#include "EditorModes.h"
+#include "Engine/Selection.h"
+#include "Editor.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Framework/Application/MenuStack.h"
+#include "IMatinee.h"
+
 #define LOCTEXT_NAMESPACE "Audiokinetic"
 
 static TWeakPtr< class IMenu > EntryMenu;

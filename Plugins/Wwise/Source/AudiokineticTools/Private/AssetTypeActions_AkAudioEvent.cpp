@@ -3,13 +3,14 @@
 /*=============================================================================
 	AssetTypeActions_AkAudioEvent.cpp:
 =============================================================================*/
-#include "AudiokineticToolsPrivatePCH.h"
+#include "AssetTypeActions_AkAudioEvent.h"
 #include "IAssetTools.h"
 #include "AkAudioClasses.h"
 #include "AkAudioDevice.h"
-#include "AssetTypeActions_AkAudioEvent.h"
 #include "AkAudioDevice.h"
 #include "Toolkits/SimpleAssetEditor.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
+#include "Misc/ScopeLock.h"
 
 #define LOCTEXT_NAMESPACE "AssetTypeActions"
 

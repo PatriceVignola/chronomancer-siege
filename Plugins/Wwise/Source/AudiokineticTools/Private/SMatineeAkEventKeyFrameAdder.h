@@ -9,7 +9,9 @@
 	SMatineeAkEventKeyFrameAdder
 ------------------------------------------------------------------------------------*/
 #include "AkAudioEvent.h"
-#include "Delegate.h"
+#include "Delegates/Delegate.h"
+#include "Widgets/Input/SButton.h"
+#include "AssetData.h"
 
 /** Delegate used when the user clicks OK */
 DECLARE_DELEGATE_TwoParams(FOnAkEventSet, UAkAudioEvent *, const FString&);

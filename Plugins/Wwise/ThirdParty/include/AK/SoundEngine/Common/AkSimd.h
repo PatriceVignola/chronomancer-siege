@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 // AkSimd.h
@@ -51,36 +51,9 @@ the specific language governing permissions and limitations under the License.
 	#include <AK/SoundEngine/Platforms/Mac/AkSimd.h>
 	#endif
 
-#elif defined( AK_XBOX360 )
-
-	#include <AK/SoundEngine/Platforms/XBox360/AkSimd.h>
-
-#elif defined (AK_PS3)
-
-	#include <AK/SoundEngine/Platforms/PS3/AkSimd.h>
-#elif defined( AK_WII )
-
-	#include <AK/SoundEngine/Platforms/Generic/AkSimd.h>
-	
-#elif defined( AK_VITA )
-
-	#include <AK/SoundEngine/Platforms/Vita/AkSimd.h>
-
-#elif defined( AK_3DS )
-
-	#include <AK/SoundEngine/Platforms/3DS/AkSimd.h>
-
 #elif defined( AK_ANDROID )
 
 	#include <AK/SoundEngine/Platforms/Android/AkSimd.h>
-
-#elif defined( AK_NACL )
-
-	#include <AK/SoundEngine/Platforms/nacl/AkSimd.h>
-	
-#elif defined( AK_WIIU )
-
-	#include <AK/SoundEngine/Platforms/WiiFamily/AkSimd.h>
 
 #elif defined( AK_PS4 )
 
@@ -97,6 +70,10 @@ the specific language governing permissions and limitations under the License.
 #elif defined( AK_QNX )
 
 	#include <AK/SoundEngine/Platforms/QNX/AkSimd.h>
+
+#elif defined( AK_NX )
+
+	#include <AK/SoundEngine/Platforms/NX/AkSimd.h>
 
 #else
 	#error Unsupported platform, or platform-specific SIMD not defined

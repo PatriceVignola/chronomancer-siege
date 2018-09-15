@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 // AkTypes.h
@@ -57,15 +57,14 @@ the specific language governing permissions and limitations under the License.
 #ifdef WINAPI_FAMILY
 	#include <winapifamily.h>
 	#if !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-		#define AK_USE_METRO_API
-		#define AK_USE_THREAD_EMULATION
-	#endif
-	#if WINAPI_FAMILY_PARTITION(WINAPI_FAMILY_APP)
-		#define AK_WIN_UNIVERSAL_APP
+		#define AK_USE_UWP_API
+		#define AK_USE_METRO_API // deprecated
+		#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_PC_APP)
+			#define AK_WIN_UNIVERSAL_APP
+		#endif
 	#endif
 #endif
 
-#define AK_MOTION								///< Internal use
 #define AK_71AUDIO
 #define AK_71FROMSTEREOMIXER
 #define AK_51FROMSTEREOMIXER
@@ -77,6 +76,9 @@ the specific language governing permissions and limitations under the License.
 #define AK_OS_WCHAR								///< Use wchar natively
 
 #define AK_RESTRICT		__restrict				///< Refers to the __restrict compilation flag available on some platforms
+#if defined(_MSC_VER) && (_MSC_VER >= 1700)
+	#define AK_FINAL		final					///< Refers to the C++11 final keyword
+#endif
 #define AK_EXPECT_FALSE( _x )	(_x)
 #define AkForceInline	__forceinline			///< Force inlining
 #define AkNoInline		__declspec(noinline)	///< Disable inlining
@@ -161,7 +163,7 @@ enum AkMemPoolAttributes
 	AkNoAlloc		= 0,	///< CreatePool will not allocate memory.  You need to allocate the buffer yourself.
 	AkMalloc		= 1<<0,	///< CreatePool will use AK::AllocHook() to allocate the memory block.
 
-	AkVirtualAlloc	= 1<<1,	///< CreatePool will use AK::VirtualAllocHook() to allocate the memory block (Windows & Xbox360 only).
+	AkVirtualAlloc	= 1<<1,	///< CreatePool will use AK::VirtualAllocHook() to allocate the memory block (Windows & XboxOne only).
 	AkAllocMask		= AkNoAlloc | AkMalloc | AkVirtualAlloc,	///< Block allocation type mask.		
 
 	AkFixedSizeBlocksMode	= 1<<3,			///< Block management type: Fixed-size blocks. Get blocks through GetBlock/ReleaseBlock API.  If not specified, use AkAlloc/AkFree.

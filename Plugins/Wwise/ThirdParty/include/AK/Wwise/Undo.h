@@ -21,8 +21,8 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2016.2.1  Build: 5995
-  Copyright (c) 2006-2016 Audiokinetic Inc.
+  Version: v2018.1.1  Build: 6727
+  Copyright (c) 2006-2018 Audiokinetic Inc.
 *******************************************************************************/
 
 #ifndef _AK_WWISE_UNDO_H
@@ -32,7 +32,7 @@ the specific language governing permissions and limitations under the License.
 
 #ifdef _DEBUG
 #define UNDO_EVENT_DEBUG_INFO
-#endif // UNIT_TEST
+#endif // _DEBUG
 
 namespace AK
 {
