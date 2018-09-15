@@ -5,21 +5,9 @@ using System.Collections.Generic;
 
 public class Academia2017EditorTarget : TargetRules
 {
-	public Academia2017EditorTarget(TargetInfo Target)
+	public Academia2017EditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-	}
-
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("Academia2017");
+		ExtraModuleNames.Add("Academia2017");
 	}
 }
