@@ -1,0 +1,3 @@
+[submodule "Content/Wwise"]
+	path = Content/Wwise
+	url = https://github.com/PatriceVignola/chronomancer-siege-wwise.git
