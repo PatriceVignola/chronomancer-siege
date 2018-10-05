@@ -9,7 +9,7 @@
 #include "SGenerateSoundBanks.h"
 #include "AkSettings.h"
 #include "AssetRegistryModule.h"
-#include "HAL/PlatformFileManager.h"
+#include "HAL/PlatformFilemanager.h"
 #include "Interfaces/IMainFrameModule.h"
 #include "Interfaces/ITargetPlatformManagerModule.h"
 #include "Interfaces/ITargetPlatform.h"

@@ -128,7 +128,7 @@ void UNetworkManagerComponent::ShowSessions(bool successful)
 {
 	UE_LOG(LogTemp, Warning, TEXT("WAS SUCCESSFUL: %d"), successful);
 
-	TSharedPtr<const FUniqueNetId> netID = GetWorld()->GetFirstLocalPlayerFromController()->GetPreferredUniqueNetId();
+	auto netID = GetWorld()->GetFirstLocalPlayerFromController()->GetPreferredUniqueNetId();
 
 	if (sessionInterface.IsValid())
 	{

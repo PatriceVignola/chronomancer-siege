@@ -322,7 +322,7 @@ void AWarriorCharacter::MoveForward(float Value)
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-		if (HasAuthority() || !AnimInstance || !AnimInstance->IsAnyMontagePlaying() && !blockMovementInput)
+		if (HasAuthority() || !AnimInstance || (!AnimInstance->IsAnyMontagePlaying() && !blockMovementInput))
 		{
 			AddMovementInput(Direction, Value);
 		}
@@ -355,7 +355,7 @@ void AWarriorCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 
-		if (HasAuthority() || !AnimInstance->IsAnyMontagePlaying() && !blockMovementInput)
+		if (HasAuthority() || (!AnimInstance->IsAnyMontagePlaying() && !blockMovementInput))
 		{
 			AddMovementInput(Direction, Value);
 		}

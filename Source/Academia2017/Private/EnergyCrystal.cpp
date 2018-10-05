@@ -13,7 +13,6 @@ AEnergyCrystal::AEnergyCrystal()
 	RootComponent = Collider;
 
 	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	Collider->bGenerateOverlapEvents;
 
 	bReplicates = true;
 }
