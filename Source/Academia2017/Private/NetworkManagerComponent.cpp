@@ -128,8 +128,8 @@ void UNetworkManagerComponent::ShowSessions(bool successful)
 {
 	UE_LOG(LogTemp, Warning, TEXT("WAS SUCCESSFUL: %d"), successful);
 
-	//TSharedPtr<const FUniqueNetId> netID = GetWorld()->GetFirstLocalPlayerFromController()->GetPreferredUniqueNetId();
-	FUniqueNetIdRepl netID = GetWorld()->GetFirstLocalPlayerFromController()->GetPreferredUniqueNetId();
+	TSharedPtr<const FUniqueNetId> netID = GetWorld()->GetFirstLocalPlayerFromController()->GetPreferredUniqueNetId();
+
 	if (sessionInterface.IsValid())
 	{
 		// Clear the Delegate handle, since we finished this call

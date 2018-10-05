@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Academia2017.h"
-#include "DestructibleComponent.h"
+#include "Runtime/Engine/Classes/Components/DestructibleComponent.h"
 #include "FloorDestroyerComponent.h"
 
 
