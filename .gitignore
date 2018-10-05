@@ -79,6 +79,7 @@ DerivedDataCache/*
 
 # Plugin Intermediate and Binary folders
 Plugins/*/Intermediate/*
+Plugins/*/Binaries/*
 
 ### VisualStudio ###
 ## Ignore Visual Studio temporary files, build results, and
