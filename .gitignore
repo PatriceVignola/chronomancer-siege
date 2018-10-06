@@ -676,3 +676,7 @@ Academia2017CodeCompletionFolders.txt
 .vscode/launch.json
 .vscode/settings.json
 .vscode/tasks.json
+!Plugins/Wwise/Binaries/*
+!Plugins/Wwise/Binaries/*/*.dylib
+!Plugins/Wwise/Binaries/*/*.so
+!Plugins/Wwise/Binaries/*/*.dll
